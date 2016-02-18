@@ -1,4 +1,5 @@
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/survminer)](http://cran.r-project.org/package=survminer)
+
 survminer: Survival Analysis and Visualization
 ==============================================
 
@@ -9,7 +10,13 @@ Find out more at <http://www.sthda.com/english/wiki/survminer>.
 Installation and loading
 ------------------------
 
-Install the latest version from GitHub:
+Install from CRAN as follow:
+
+``` r
+install.packages("survminer")
+```
+
+Or, install the latest version from GitHub:
 
 ``` r
 # Install
@@ -20,7 +27,7 @@ devtools::install_github("kassambara/survminer")
 ``` r
 # Loading
 library("survminer")
-#> Loading required package: ggplot2
+# Loading required package: ggplot2
 ```
 
 Getting started
@@ -32,12 +39,12 @@ Getting started
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 require("survival")
-#> Loading required package: survival
+# Loading required package: survival
 fit <- survfit(Surv(time, status) ~ 1, data = lung)
 ggsurvplot(fit, color = "#2E9FDF")
 ```
 
-![survminer: Drawing survival curves using ggplot2](README-ggplot2-survival-plot-1.png)
+![](README-ggplot2-survival-plot-1.png)<!-- -->
 
 ``` r
 
@@ -55,7 +62,34 @@ fit<- survfit(Surv(time, status) ~ sex, data = lung)
 ggsurvplot(fit)
 ```
 
-![survminer: Drawing survival curves using ggplot2](README-ggplot2-survival-plot-2.png)
+![](README-ggplot2-survival-plot-2.png)<!-- -->
+
+``` r
+
+
+# Change font style, size and color
+#++++++++++++++++++++++++++++++++++++
+# Change only font size
+ggsurvplot(fit, main = "Survival curve",
+   font.main = 18,
+   font.x =  16,
+   font.y = 16,
+   font.tickslab = 14)
+```
+
+![](README-ggplot2-survival-plot-3.png)<!-- -->
+
+``` r
+
+# Change font size, style and color at the same time
+ggsurvplot(fit, main = "Survival curve",
+   font.main = c(16, "bold", "darkblue"),
+   font.x = c(14, "bold.italic", "red"),
+   font.y = c(14, "bold.italic", "darkred"),
+   font.tickslab = c(12, "plain", "darkgreen"))
+```
+
+![](README-ggplot2-survival-plot-4.png)<!-- -->
 
 ``` r
 
@@ -68,7 +102,7 @@ ggsurvplot(fit, legend = "bottom",
            legend.labs = c("Male", "Female"))
 ```
 
-![survminer: Drawing survival curves using ggplot2](README-ggplot2-survival-plot-3.png)
+![](README-ggplot2-survival-plot-5.png)<!-- -->
 
 ``` r
 
@@ -76,7 +110,7 @@ ggsurvplot(fit, legend = "bottom",
 ggsurvplot(fit, legend = c(0.2, 0.2))
 ```
 
-![survminer: Drawing survival curves using ggplot2](README-ggplot2-survival-plot-4.png)
+![](README-ggplot2-survival-plot-6.png)<!-- -->
 
 ``` r
 
@@ -95,7 +129,7 @@ ggsurvplot(fit,  size = 1,  # change line size
            )
 ```
 
-![survminer: Drawing survival curves using ggplot2](README-ggplot2-survival-plot-5.png)
+![](README-ggplot2-survival-plot-7.png)<!-- -->
 
 ``` r
 
@@ -105,7 +139,7 @@ ggsurvplot(fit, linetype = "strata",
            palette = "Dark2")
 ```
 
-![survminer: Drawing survival curves using ggplot2](README-ggplot2-survival-plot-6.png)
+![](README-ggplot2-survival-plot-8.png)<!-- -->
 
 ``` r
 
@@ -115,19 +149,32 @@ ggsurvplot(fit, linetype = "strata",
            palette = "grey")
 ```
 
-![survminer: Drawing survival curves using ggplot2](README-ggplot2-survival-plot-7.png)
+![](README-ggplot2-survival-plot-9.png)<!-- -->
 
 ``` r
 
 # Add risk table
 #++++++++++++++++++++++++++++++++++++
 
-# Add Risk table
+# Add risk table
+# and change risk table y text colors by strata
 ggsurvplot(fit, pval = TRUE, conf.int = TRUE,
-           risk.table = TRUE)
+           risk.table = TRUE, risk.table.y.text.col = TRUE)
 ```
 
-![survminer: Drawing survival curves using ggplot2](README-ggplot2-survival-plot-8.png)
+![](README-ggplot2-survival-plot-10.png)<!-- -->
+
+``` r
+
+# Customize the output and then print
+res <- ggsurvplot(fit, pval = TRUE, conf.int = TRUE,
+           risk.table = TRUE)
+res$table <- res$table + theme(axis.line = element_blank())
+res$plot <- res$plot + labs(title = "Survival Curves")
+print(res)
+```
+
+![](README-ggplot2-survival-plot-11.png)<!-- -->
 
 ``` r
 
@@ -136,14 +183,32 @@ ggsurvplot(fit,
            pval = TRUE, conf.int = TRUE,
            risk.table = TRUE, # Add risk table
            risk.table.col = "strata", # Change risk table color by groups
-           lienetype = "strata", # Change line type by groups
+           linetype = "strata", # Change line type by groups
            ggtheme = theme_bw(), # Change ggplot2 theme
            palette = c("#E7B800", "#2E9FDF"))
 ```
 
-![survminer: Drawing survival curves using ggplot2](README-ggplot2-survival-plot-9.png)
+![](README-ggplot2-survival-plot-12.png)<!-- -->
 
 ``` r
+
+
+# Change x axis limits (xlim)
+#++++++++++++++++++++++++++++++++++++
+# One would like to cut axes at a specific time point
+ggsurvplot(fit, 
+           pval = TRUE, conf.int = TRUE,
+           risk.table = TRUE, # Add risk table
+           risk.table.col = "strata", # Change risk table color by groups
+           ggtheme = theme_bw(), # Change ggplot2 theme
+           palette = "Dark2",
+           xlim = c(0, 600))
+```
+
+![](README-ggplot2-survival-plot-13.png)<!-- -->
+
+``` r
+
 
 # Survival curve transformation
 #++++++++++++++++++++++++++++++++++++
@@ -154,7 +219,7 @@ ggsurvplot(fit, conf.int = TRUE,
            fun = "event")
 ```
 
-![survminer: Drawing survival curves using ggplot2](README-ggplot2-survival-plot-10.png)
+![](README-ggplot2-survival-plot-14.png)<!-- -->
 
 ``` r
 
@@ -165,7 +230,7 @@ ggsurvplot(fit, conf.int = TRUE,
            fun = "cumhaz")
 ```
 
-![survminer: Drawing survival curves using ggplot2](README-ggplot2-survival-plot-11.png)
+![](README-ggplot2-survival-plot-15.png)<!-- -->
 
 ``` r
 
@@ -177,7 +242,7 @@ ggsurvplot(fit, conf.int = TRUE,
            fun = function(y) y*100)
 ```
 
-![survminer: Drawing survival curves using ggplot2](README-ggplot2-survival-plot-12.png)
+![](README-ggplot2-survival-plot-16.png)<!-- -->
 
 ``` r
 
@@ -203,49 +268,22 @@ ggsurvplot(fit2, pval = TRUE,
            risk.table = TRUE)
 ```
 
-![survminer: Drawing survival curves using ggplot2](README-ggplot2-survival-plot-13.png)
+![](README-ggplot2-survival-plot-17.png)<!-- -->
 
 ``` r
 
-# Adjust risk table and survival plot locations 
+# Adjust risk table and survival plot heights
 # ++++++++++++++++++++++++++++++++++++
-# Adjust risk table location, shift to the left
-ggsurvplot(fit2, pval = TRUE,
-           break.time.by = 400, 
-           risk.table = TRUE,
-           risk.table.col = "strata",
-           risk.table.adj = -2, # risk table location adj
-           palette = "Dark2")
-```
-
-![survminer: Drawing survival curves using ggplot2](README-ggplot2-survival-plot-14.png)
-
-``` r
-
-# Adjust survival plot location, shift to the right
-ggsurvplot(fit2, pval = TRUE,
-           break.time.by = 400, 
-           risk.table = TRUE,
-           risk.table.col = "strata",
-           surv.plot.adj = 4.9, # surv plot location adj
-           palette = "Dark2")
-```
-
-![survminer: Drawing survival curves using ggplot2](README-ggplot2-survival-plot-15.png)
-
-``` r
-
 # Risk table height
 ggsurvplot(fit2, pval = TRUE,
-           break.time.by = 400, 
-           risk.table = TRUE,
-           risk.table.col = "strata",
-           risk.table.height = 0.5, # Useful when you have multiple groups
-           surv.plot.adj = 4.9, # surv plot location adj
-           palette = "Dark2")
+          break.time.by = 400,
+          risk.table = TRUE,
+          risk.table.col = "strata",
+          risk.table.height = 0.5, # Useful when you have multiple groups
+          palette = "Dark2")
 ```
 
-![survminer: Drawing survival curves using ggplot2](README-ggplot2-survival-plot-16.png)
+![](README-ggplot2-survival-plot-18.png)<!-- -->
 
 ``` r
   
@@ -260,4 +298,4 @@ ggsurvplot(fit2, pval = TRUE,
            legend.labs = c("A", "B", "C", "D", "E", "F"))
 ```
 
-![survminer: Drawing survival curves using ggplot2](README-ggplot2-survival-plot-17.png)
+![](README-ggplot2-survival-plot-19.png)<!-- -->

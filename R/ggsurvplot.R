@@ -5,10 +5,10 @@
 #'Drawing survival curves using ggplot2
 #'@description Drawing survival curves using ggplot2
 #'@param fit an object of class survfit.
-#'@param fun an arbitrary function defining a transformation of the
-#'  survival curve. For example use function(y){y*100}. Often used transformations
-#'  can be specified with a character argument instead: "event" plots cumulative
-#'  events (f(y) = 1-y), "cumhaz" plots the cumulative hazard function (f(y) =
+#'@param fun an arbitrary function defining a transformation of the survival
+#'  curve. For example use function(y){y*100}. Often used transformations can be
+#'  specified with a character argument instead: "event" plots cumulative events
+#'  (f(y) = 1-y), "cumhaz" plots the cumulative hazard function (f(y) =
 #'  -log(y)), and "cloglog" creates a complimentary log-log survival plot (f(y)
 #'  = log(-log(y)) along with log scale for the x-axis).
 #'@param surv.scale scale transformation of survival curves. Allowed values are
@@ -16,9 +16,9 @@
 #'@param color color to be used for the survival curves. This argument is
 #'  ignored when the number of strata (groups > 1). In this case, use the
 #'  argument palette.
-#'@param palette the color palette to be used. Allowed values include "grey" for
-#'  grey color palettes; brewer palettes e.g. "RdBu", "Blues", ...; or custom
-#'  color palette e.g. c("blue", "red").
+#'@param palette the color palette to be used. Allowed values include "hue" for
+#'  the default hue color scale; "grey" for grey color palettes; brewer palettes
+#'  e.g. "RdBu", "Blues", ...; or custom color palette e.g. c("blue", "red").
 #'@param break.time.by numeric value controlling time axis breaks. Default value
 #'  is NULL.
 #'@param conf.int logical value. If TRUE, plots confidence interval.
@@ -29,28 +29,35 @@
 #'@param pval.coord numeric vector, of length 2, specifying the x and y
 #'  coordinates of the p-value. Default values are NULL.
 #'@param main,xlab,ylab main title and axis labels
+#'@param font.main,font.x,font.y,font.tickslab,font.legend a vector of length 3
+#'  indicating respectively the size (e.g.: 14), the style (e.g.: "plain",
+#'  "bold", "italic", "bold.italic") and the color (e.g.: "red") of main title,
+#'  xlab and ylab and axis tick labels, respectively. For example \emph{font.x =
+#'  c(14, "bold", "red")}.  Use font.x = 14, to change only font size; or use
+#'  font.x = "bold", to change only font face.
 #'@param xlim,ylim x and y axis limits e.g. xlim = c(0, 1000), ylim = c(0, 1).
 #'@param legend character specifying legend position. Allowed values are one of
-#'  c("top", "bottom", "left", "right", "none"). Default is "top" side
-#'  position. to remove the legend use legend = "none". Legend position can be
-#'  also specified using a numeric vector c(x, y); see details section.
+#'  c("top", "bottom", "left", "right", "none"). Default is "top" side position.
+#'  to remove the legend use legend = "none". Legend position can be also
+#'  specified using a numeric vector c(x, y); see details section.
 #'@param legend.title legend title.
-#'@param legend.labs character vector specifying legend labels.
+#'@param legend.labs character vector specifying legend labels. Used to replace
+#'  the names of the strata from the fit. Should be given in the same order as
+#'  those strata.
 #'@param risk.table logical value specifying whether to show risk table. Default
 #'  is FALSE.
+#'@param risk.table.title Title to be used for risk table.
 #'@param risk.table.col color to be used for risk table. Default value is
 #'  "black". If you want to color by strata (i.e. groups), use risk.table.col =
 #'  "strata".
-#'@param risk.table.adj numeric value, used to adjust the location of the risk
-#'  table. Negative value will shift the table to the left and positive value
-#'  will shift the table to the right side. Ignored when risk.table = FALSE.
+#'@param risk.table.fontsize font size to be used for the risk table.
+#'@param risk.table.y.text.col logical. Default value is FALSE. If TRUE, risk
+#'  table tick labels will be colored by strata.
 #'@param risk.table.height the height of the risk table on the grid. Increase
 #'  the value when you have many strata. Default is 0.25. Ignored when
 #'  risk.table = FALSE.
-#'@param surv.plot.adj numeric value, used to adjust survival plot (like
-#'  risk.table.adj). Ignored when risk.table = FALSE.
 #'@param surv.plot.height the height of the survival plot on the grid. Default
-#'  is 2. Ignored when risk.table = FALSE.
+#'  is 0.75. Ignored when risk.table = FALSE.
 #'@param ggtheme function, ggplot2 theme name. Default value is theme_classic().
 #'  Allowed values include ggplot2 official themes: theme_gray(), theme_bw(),
 #'  theme_minimal(), theme_classic(), theme_void(), ....
@@ -62,8 +69,9 @@
 #'  Their values should be between 0 and 1. c(0,0) corresponds to the "bottom
 #'  left" and c(1,1) corresponds to the "top right" position. For instance use
 #'  legend = c(0.8, 0.2).
-#'@return return a ggplot2 (when risk.table = FALSE).
-#'
+#'@return return an object of class ggsurvplot which is list containing two
+#'  ggplot objects, including: \itemize{ \item plot: the survival plot \item
+#'  table: the number at risk table per time }
 #' @examples
 #'
 #'#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -77,6 +85,17 @@
 #'
 #'# Drawing survival curves
 #'ggsurvplot(fit)
+#'
+#'# Change font size, style and color
+#'#++++++++++++++++++++++++++++++++++++
+#'\dontrun{
+#' # Change font size, style and color at the same time
+#' ggsurvplot(fit, main = "Survival curve",
+#'    font.main = c(16, "bold", "darkblue"),
+#'    font.x = c(14, "bold.italic", "red"),
+#'    font.y = c(14, "bold.italic", "darkred"),
+#'    font.tickslab = c(12, "plain", "darkgreen"))
+#'}
 #'
 #'# Legend: title, labels and position
 #'#++++++++++++++++++++++++++++++++++++
@@ -104,17 +123,11 @@
 #')
 #'
 #'# Use brewer color palette "Dark2"
+#'# Add risk table
 #'ggsurvplot(fit, linetype = "strata",
 #'           conf.int = TRUE, pval = TRUE,
-#'           palette = "Dark2")
+#'           palette = "Dark2", risk.table = TRUE)
 #'
-#'
-#'# Add risk table
-#'#++++++++++++++++++++++++++++++++++++
-#'
-#'# Add Risk table
-#'ggsurvplot(fit, pval = TRUE, conf.int = TRUE,
-#'           risk.table = TRUE)
 #'
 #'# Change color, linetype by strata, risk.table color by strata
 #'ggsurvplot(fit,
@@ -125,22 +138,6 @@
 #'           ggtheme = theme_bw(), # Change ggplot2 theme
 #'           palette = c("#E7B800", "#2E9FDF"))
 #'
-#'# Survival curve transformation
-#'#++++++++++++++++++++++++++++++++++++
-#'# Plot cumulative events
-#'ggsurvplot(fit, conf.int = TRUE,
-#'           palette = c("#FF9E29", "#86AA00"),
-#'           risk.table = TRUE, risk.table.col = "strata",
-#'           fun = "event")
-#'
-#'
-#'# Arbitrary function
-#'ggsurvplot(fit, conf.int = TRUE,
-#'           palette = c("#FF9E29", "#86AA00"),
-#'           risk.table = TRUE, risk.table.col = "strata",
-#'           pval = TRUE,
-#'           fun = function(y) y*100)
-#'
 #'
 #'#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #'# Example 3: Survival curve with multiple group
@@ -148,7 +145,7 @@
 #'
 #'# Fit (complexe) survival curves
 #'#++++++++++++++++++++++++++++++++++++
-#'
+#' \dontrun{
 #'require("survival")
 #'fit2 <- survfit( Surv(time, status) ~ rx + adhere,
 #'                 data = colon )
@@ -158,57 +155,35 @@
 #'
 #'# Visualize: add p-value, chang y limits
 #'# change color using brewer palette
-#'ggsurvplot(fit2, pval = TRUE,
-#'           break.time.by = 400,
-#'           risk.table = TRUE)
-#'
-#'# Adjust risk table and survival plot locations
-#'# ++++++++++++++++++++++++++++++++++++
-#'# Adjust risk table location, shift to the left
-#'
-#'ggsurvplot(fit2, pval = TRUE,
-#'           break.time.by = 400,
-#'           risk.table = TRUE,
-#'           risk.table.col = "strata",
-#'           risk.table.adj = -2, # risk table location adj
-#'           palette = "Dark2")
-#'
-#'# Adjust survival plot location, shift to the right
-#'# Change Risk table height
+#'# Adjust risk table and survival plot heights
 #'ggsurvplot(fit2, pval = TRUE,
 #'           break.time.by = 400,
 #'           risk.table = TRUE,
 #'           risk.table.col = "strata",
 #'           risk.table.height = 0.5, # Useful when you have multiple groups
-#'           surv.plot.adj = 4.9, # surv plot location adj
 #'           palette = "Dark2")
+#'}
 #'
-#'
-#'# Change legend labels
-#'# ++++++++++++++++++++++++++++++++++++
-#' \dontrun{
-#'ggsurvplot(fit2, pval = TRUE,
-#'           break.time.by = 400,
-#'           risk.table = TRUE,
-#'           risk.table.col = "strata",
-#'           ggtheme = theme_bw(),
-#'           legend.labs = c("A", "B", "C", "D", "E", "F"))
-#' }
-#'
+#'@describeIn ggsurvplot Draws survival curves using ggplot2.
 #'@export
 ggsurvplot <- function(fit, fun = NULL,
-                       color = NULL, palette = NULL, break.time.by = NULL,
+                       color = NULL, palette = "hue", break.time.by = NULL,
                        surv.scale = c("default", "percent"),
                        conf.int = FALSE, conf.int.fill = "gray",
                        censor = TRUE,
                        pval = FALSE, pval.size = 5, pval.coord = c(NULL, NULL),
                        main = NULL, xlab = "Time", ylab = "Survival probability",
+                       font.main = c(16, "plain", "black"),
+                       font.x = c(14, "plain", "black"), font.y = c(14, "plain", "black"),
+                       font.tickslab = c(12, "plain", "black"),
                        xlim = NULL, ylim = NULL,
                        legend = c("top", "bottom", "left", "right", "none"),
-                       legend.title = "strata", legend.labs = NULL,
-                       risk.table = FALSE, risk.table.col = "black", risk.table.adj = NULL,
-                       risk.table.height = 0.25,
-                       surv.plot.adj = NULL, surv.plot.height = 2,
+                       legend.title = "Strata", legend.labs = NULL,
+                       font.legend = c(10, "plain", "black"),
+                       risk.table = FALSE, risk.table.title = "Number at risk by time",
+                       risk.table.col = "black", risk.table.fontsize = 4.5,
+                       risk.table.y.text.col = FALSE,
+                       risk.table.height = 0.25, surv.plot.height = 0.75,
                        ggtheme = ggplot2::theme_classic(),
                        ...
                        ){
@@ -220,11 +195,36 @@ ggsurvplot <- function(fit, fun = NULL,
   if(is.null(ylim) & is.null(fun)) ylim <- c(0, 1)
   if(!is(legend, "numeric")) legend <- match.arg(legend)
 
+  .check_legend_labs(fit, legend.labs)
+
+  # Number of strata and strata names
   n.strata <- ifelse(is.null(fit$strata) == TRUE, 1, length(fit$strata))
 
-  break.time.by <- ifelse(is.null(break.time.by),
-                          round(max(fit$time)/10), break.time.by)
-  times <- seq(0, max(fit$time), by = break.time.by)
+  .strata <- NULL
+  # Multiple groups
+  if (!is.null(fit$strata)){
+    .strata <- rep(names(fit$strata), fit$strata)
+    strata_names <- names(fit$strata)
+    if(is.null(legend.labs)) legend.labs <- names(fit$strata)
+    if(missing(color)) color <- "strata"
+  }
+
+  # One group
+  else{
+
+    if (is.null(legend.labs)) {
+      .strata <- as.factor(rep("All", length(fit$time)))
+      legend.labs <- strata_names <- "All"
+    }
+
+    else {
+      .strata <- as.factor(rep(legend.labs, length(fit$time)))
+      strata_names <- legend.labs
+    }
+
+    if(missing(conf.int)) conf.int = TRUE
+    if(missing(color)) color <- "black"
+  }
 
 
   # data for survival plot
@@ -235,24 +235,10 @@ ggsurvplot <- function(fit, fun = NULL,
                   surv = fit$surv,
                   std.err = fit$std.err,
                   upper = fit$upper,
-                  lower = fit$lower
+                  lower = fit$lower,
+                  strata = as.factor(.strata)
                   )
 
-  if ('strata' %in% names(fit)){
-    d <- cbind.data.frame(d, strata =  rep(names(fit$strata), fit$strata))
-    if(missing(color)) color <- "strata"
-    if(is.null(legend.labs)) legend.labs <-  sort(names(fit$strata))
-    else{
-      if(length(levels(d$strata))!=length(legend.labs))
-        stop("The length of legend.labs must be ", length(levels(d$strata)) )
-       levels(d$strata) <- legend.labs
-    }
-  }else{
-    d <- cbind.data.frame(d, strata =  factor(rep('All', nrow(d))))
-    if(missing(conf.int)) conf.int = TRUE
-    if(missing(color)) color <- "black"
-    if(is.null(legend.labs)) legend.labs <- "All"
-  }
 
   # connect to the origin for plotting
     base <- d[1, , drop = FALSE]
@@ -273,17 +259,30 @@ ggsurvplot <- function(fit, fun = NULL,
   # Scale transformation
   surv.scale <- match.arg(surv.scale)
   scale_labels <-  ggplot2::waiver()
-  if (surv.scale == "percent")
-    scale_labels <- scales::percent
+  if (surv.scale == "percent") scale_labels <- scales::percent
+
 
   # Drawing survival curves
+  d$strata <- factor(d$strata, levels = strata_names)
+  d <- d[order(d$strata), , drop = FALSE]
   surv.color <- ifelse(n.strata > 1, "strata", color)
   p <- ggplot2::ggplot(d, ggplot2::aes_string("time", "surv")) +
       .geom_exec(ggplot2::geom_step, data = d, size = size, color = surv.color, ...) +
        ggplot2::scale_y_continuous(labels = scale_labels, limits = ylim) +
-       ggplot2::scale_x_continuous(breaks = times, limits = xlim) +
-       .ggcolor(palette) +
-       .ggfill(palette) + ggtheme
+       ggplot2::coord_cartesian(xlim = xlim)+
+       .ggcolor(palette, breaks = strata_names, labels = legend.labs) +
+       .ggfill(palette, breaks = strata_names, labels = legend.labs) +
+     #   ggplot2::scale_color_discrete(breaks = strata_names, labels = legend.labs) + # change legend labels
+      # ggplot2::scale_fill_discrete(breaks = strata_names, labels = legend.labs) + # change legend labels
+        ggtheme
+
+
+  if(is.null(break.time.by))
+    times <- ggplot_build(p)$panel$ranges[[1]]$x.major_source
+  else times <- seq(0, max(fit$time), by = break.time.by)
+
+  p <- p + ggplot2::scale_x_continuous(breaks = times)
+
 
   # Add confidence interval
   if(conf.int){
@@ -293,20 +292,21 @@ ggsurvplot <- function(fit, fun = NULL,
                         fill = conf.int.fill, alpha = 0.3, na.rm = TRUE)
   }
   # Add cencored
-  if (censor) {
+  if (censor & any(d$n.censor >= 1)) {
     p <- p + .geom_exec(ggplot2::geom_point, data = d[d$n.censor > 0, , drop = FALSE],
                           colour = surv.color, size = size*4.5, shape = "+")
   }
-   # print(d[d$n.censor > 0, , drop = FALSE])
 
   # Add pvalue
-  if(pval){
+  if(pval & !is.null(fit$strata)){
     pval <- .get_pvalue(fit)
+    pvaltxt <- ifelse(pval < 1e-04, "p < 0.0001",
+                    paste("p =", signif(pval, 2)))
+
     pval.x <- ifelse(is.null(pval.coord[1]), 0.1*max(fit$time), pval.coord[1])
     pval.y <- ifelse(is.null(pval.coord[2]), 0.2, pval.coord[2])
     p <- p + ggplot2::annotate("text", x = pval.x, y = pval.y,
-                               label = paste0("p = ", signif(pval, 3)),
-                               size = pval.size)
+                               label = pvaltxt, size = pval.size)
   }
 
   # Axis limits
@@ -316,28 +316,74 @@ ggsurvplot <- function(fit, fun = NULL,
                          color = legend.title, fill = legend.title,
                          linetype = legend.title
                          )
+  p <-.labs(p = p, font.main = font.main, font.x = font.x, font.y = font.y)
+  p <- .set_ticks(p, font.tickslab = font.tickslab)
   p <- p + ggplot2::theme(legend.position = legend)
+  p <- .set_legend_font(p, font.legend)
+
 
   # Add risk table
    if(risk.table){
-     blankp <- .blank_plot(d, "time", "strata")
      risktable <- .risk_table_plot(fit, times = times,
-                                   legend.labs = legend.labs,
-                                   xlim = xlim, ylim = ylim, risk.table.adj = risk.table.adj,
-                                   risk.table.col = risk.table.col, palette = palette)
-     m <- max(nchar(legend.labs))
-    if(is.null(surv.plot.adj)) surv.plot.adj <- ifelse(m < 10, 1.5, 2.5)
-    p <- p + ggplot2::theme(legend.position = "top") +
-    ggplot2::theme(plot.margin = grid::unit(c(0, 1, .5, surv.plot.adj),"lines"))
-    gridExtra::grid.arrange(p, blankp, risktable, clip = FALSE, nrow = 3,
-                 ncol = 1, heights = grid::unit(c(surv.plot.height, .1, risk.table.height),
-                                                c("null", "null", "null")))
+                                   xlim = xlim, legend.labs = legend.labs,
+                                   risk.table.col = risk.table.col, palette = palette,
+                                   ggtheme = ggtheme, risk.table.fontsize = risk.table.fontsize,
+                                   risk.table.title = risk.table.title)
+     risktable <-.labs(risktable, font.main = font.main, font.x = font.x, font.y = font.y, xlab = xlab, ylab = legend.title)
+     risktable <- .set_ticks(risktable, font.tickslab = font.tickslab)
+     risktable <- risktable + ggplot2::labs(color = legend.title, shape = legend.title)
+     if("left" %in% legend) risktable <- risktable + ggplot2::theme(legend.position = legend)
+     else risktable <- risktable + ggplot2::theme(legend.position = "none")
+     # color risk.table ticks by strata
+     if(risk.table.y.text.col){
+       g <- ggplot2::ggplot_build(p)
+       cols <- unlist(unique(g$data[[1]]["colour"]))
+       names(cols) <- legend.labs # Give every color an appropriate name
+       risktable <- risktable + ggplot2::theme(axis.text.y = ggplot2::element_text(colour = rev(cols)))
+     }
 
-   #  p <- gridExtra::arrangeGrob(p, blankp, risktable, clip = FALSE, nrow = 3,
-   #                  ncol = 1, heights = unit(c(2, .1, .25), c("null", "null", "null")))
-   #  invisible(p)
+    res <- list(table = risktable, plot = p)
    }
-  else return(p)
+  else res <- list(plot = p)
+  class(res) <- c("ggsurvplot", "list")
+  attr(res, "surv.plot.height") <- surv.plot.height
+  attr(res, "risk.table.height") <- risk.table.height
+  return(res)
+}
+
+#' @param x an object of class ggsurvplot
+#' @method print ggsurvplot
+#' @rdname ggsurvplot
+#' @export
+print.ggsurvplot <- function(x, surv.plot.height = NULL, risk.table.height = NULL, ...){
+  if(!inherits(x, "ggsurvplot"))
+    stop("An object of class ggsurvplot is required.")
+  if(is.null(x$table)) print(x$plot)
+  else{
+  surv.plot.height <- ifelse(is.null(surv.plot.height), attr(x, "surv.plot.height"), surv.plot.height)
+  risk.table.height <- ifelse(is.null(risk.table.height), attr(x, "risk.table.height"), risk.table.height)
+  surv.plot.height <- ifelse(is.null(surv.plot.height), 0.75, surv.plot.height)
+  risk.table.height <- ifelse(is.null(risk.table.height), 0.25, risk.table.height)
+  # Hide legende: don't use  theme(legend.position = "none") because awkward legend when position = "left"
+  # x$table <- x$table + theme(legend.position = "none")
+  x$table <- x$table + theme(legend.key.height = NULL, legend.key.width = NULL,
+                              legend.key = element_rect(colour = NA, fill = NA),
+                              legend.text = element_text(colour = NA),
+                              legend.title = element_text(colour = NA)) +
+    guides(color = FALSE)
+
+  plots <- rev(x)
+  grobs <- widths <- list()
+  for (i in 1:length(plots)) {
+    grobs[[i]] <- ggplotGrob(plots[[i]])
+    widths[[i]] <- grobs[[i]]$widths[2:5]
+  }
+  maxwidth <- do.call(grid::unit.pmax, widths)
+  for (i in 1:length(grobs)) {
+    grobs[[i]]$widths[2:5] <- as.list(maxwidth)
+  }
+  do.call(gridExtra::grid.arrange, c(grobs, nrow = 2, heights = list(c(surv.plot.height, risk.table.height))))
+  }
 }
 
 
@@ -383,74 +429,71 @@ ggsurvplot <- function(fit, fun = NULL,
 }
 
 # Draw risk table
-# risk.table.adj adjustement of risk table location. Used to shift the table on the right or
 # on the left
 .risk_table_plot <- function(fit, times, legend.labs = NULL,
-                        xlim = c(0, max(fit$time)), ylim = c(0,1),
-                        risk.table.adj = NULL, risk.table.col = "black",
-                        palette = NULL){
+                             xlim = c(0, max(fit$time)),
+                             risk.table.col = "black",
+                             palette = NULL, ggtheme = ggplot2::theme_classic(),
+                             risk.table.fontsize = 5, risk.table.title = "Number at risk by time"
+)
+  {
 
   ntimes <- length(summary(fit, times = times, extend = TRUE)$time)
 
-  if (!('strata' %in% names(fit))){
-    strata <- factor(rep("All", ntimes))
-    if(is.null(legend.labs)) legend.labs <- "All"
-  } else{
-    strata<- factor(summary(fit, times = times, extend = TRUE)$strata)
-    if(is.null(legend.labs)) legend.labs <-  sort(names(fit$strata))
-    else {
-      if(length(levels(strata))!=length(legend.labs))
-        stop("The length of legend.labs must be ", length(levels(strata)) )
-       levels(strata) <- legend.labs
-    }
+  if (is.null(fit$strata)) {
+    .strata <- factor(rep("All", length(times)))
+    strata_names <- "All"
   }
+  else {
+    .strata <- factor(summary(fit, times = times, extend = TRUE)$strata)
+    strata_names <- names(fit$strata)
+  }
+  risk.data <- data.frame(
+    strata = as.factor(.strata),
+    time = summary(fit, times = times, extend = TRUE)$time,
+    n.risk = round(summary(fit, times = times, extend = TRUE)$n.risk)
+  )
 
-    # if(is.null(ystrataname)) ystrataname <- "Strata"
 
-    risk.data <- data.frame(
-      strata = factor(strata, levels = levels(strata)),
-      time = summary(fit,times = times, extend = TRUE)$time,
-      n.risk = summary(fit,times = times,extend = TRUE)$n.risk
-    )
+  if (!is.null(legend.labs))
+    risk.data$strata <- factor(risk.data$strata, labels = legend.labs)
 
-    .blank <- ggplot2::element_blank()
-    dtp <- ggplot2::ggplot(risk.data,
-           ggplot2::aes_string(x = 'time', y = 'strata', label = "n.risk")) +
-          .geom_exec(ggplot2::geom_text, data = risk.data, size = 3.5, color = risk.table.col) +
-           ggplot2::theme_bw() +
-           ggplot2::scale_y_discrete(breaks = levels(risk.data$strata),
-                       labels = legend.labs, limits = rev(legend.labs)) +
-          ggplot2::scale_x_continuous("Numbers at risk", limits = xlim) +
-          .ggcolor(palette) +
-          ggplot2:: theme(axis.title.x = ggplot2::element_text(size = 10, vjust = 1),
-            panel.grid.major = .blank, panel.grid.minor = .blank,
-            panel.border = .blank, axis.text.x = .blank,
-            axis.ticks = .blank, axis.text.y = ggplot2::element_text(face = "bold", hjust = 1 ))+
-          ggplot2::theme(legend.position = "none") +
-          ggplot2::labs(x = NULL, y = NULL)
+  time <- strata <- label <- n.risk <- NULL
 
-   # Adjust position for table at risk
-    m <- max(nchar(legend.labs))
-    if(is.null(risk.table.adj)) {
-      risk.table.adj <- ifelse(m < 10, 2.5, 3.5) - 0.15 * m
-    }
-    dtp <- dtp +
-      ggplot2::theme(plot.margin = grid::unit(c(-1.5, 1, 0.1, risk.table.adj), "lines"))
-    return(dtp)
+  dtp <- ggplot2::ggplot(risk.data,
+                         ggplot2::aes(x = time, y = rev(strata), label = n.risk, shape = rev(strata))) +
+    ggplot2::geom_point(size = 0)+
+    .geom_exec(ggplot2::geom_text, data = risk.data, size = risk.table.fontsize, color = risk.table.col) +
+    ggtheme +
+    ggplot2::scale_y_discrete(breaks = as.character(levels(risk.data$strata)),
+                              labels = rev(levels(risk.data$strata))) +
+    ggplot2::coord_cartesian(xlim = xlim) +
+    ggplot2::scale_x_continuous(breaks = times) +
+    .ggcolor(palette)+
+    labs(title = risk.table.title) +
+    ggplot2::theme(legend.position = "none")
+
+
+  return(dtp)
 }
 
 
+# Check user defined legend labels
+.check_legend_labs <- function(fit, legend.labs = NULL){
 
-# Draw a blank plot
-.blank_plot <- function(d, x, y){
-  .blank <- ggplot2::element_blank()
-  blank_plot <- ggplot2::ggplot(d, ggplot2::aes_string(x, y)) +
-    ggplot2::geom_blank() +  ggplot2::theme_bw() +
-    ggplot2::theme(axis.text.x = .blank ,axis.text.y = .blank ,
-          axis.title.x = .blank , axis.title.y = .blank ,
-          axis.ticks = .blank ,
-          panel.grid.major = .blank, panel.border = .blank)
-  blank_plot
+  if(!is.null(legend.labs)){
+
+    if(!is.null(fit$strata)){
+      if(length(fit$strata) != length(legend.labs))
+        stop("The length of legend.labs must should be ", length(fit$strata) )
+    }
+
+    else{
+      if(length(legend.labs) != 1)
+        stop("The length of legend.labs should be 1")
+    }
+
+  }
 }
 
 

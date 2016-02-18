@@ -2,26 +2,34 @@
 % Please edit documentation in R/ggsurvplot.R
 \name{ggsurvplot}
 \alias{ggsurvplot}
+\alias{print.ggsurvplot}
 \title{Drawing survival curves using ggplot2}
 \usage{
-ggsurvplot(fit, fun = NULL, color = NULL, palette = NULL,
+ggsurvplot(fit, fun = NULL, color = NULL, palette = "hue",
   break.time.by = NULL, surv.scale = c("default", "percent"),
   conf.int = FALSE, conf.int.fill = "gray", censor = TRUE, pval = FALSE,
   pval.size = 5, pval.coord = c(NULL, NULL), main = NULL, xlab = "Time",
-  ylab = "Survival probability", xlim = NULL, ylim = NULL,
+  ylab = "Survival probability", font.main = c(16, "plain", "black"),
+  font.x = c(14, "plain", "black"), font.y = c(14, "plain", "black"),
+  font.tickslab = c(12, "plain", "black"), xlim = NULL, ylim = NULL,
   legend = c("top", "bottom", "left", "right", "none"),
-  legend.title = "strata", legend.labs = NULL, risk.table = FALSE,
-  risk.table.col = "black", risk.table.adj = NULL,
-  risk.table.height = 0.25, surv.plot.adj = NULL, surv.plot.height = 2,
+  legend.title = "Strata", legend.labs = NULL, font.legend = c(10,
+  "plain", "black"), risk.table = FALSE,
+  risk.table.title = "Number at risk by time", risk.table.col = "black",
+  risk.table.fontsize = 4.5, risk.table.y.text.col = FALSE,
+  risk.table.height = 0.25, surv.plot.height = 0.75,
   ggtheme = ggplot2::theme_classic(), ...)
+
+\method{print}{ggsurvplot}(x, surv.plot.height = NULL,
+  risk.table.height = NULL, ...)
 }
 \arguments{
 \item{fit}{an object of class survfit.}
 
-\item{fun}{an arbitrary function defining a transformation of the
-survival curve. For example use function(y){y*100}. Often used transformations
-can be specified with a character argument instead: "event" plots cumulative
-events (f(y) = 1-y), "cumhaz" plots the cumulative hazard function (f(y) =
+\item{fun}{an arbitrary function defining a transformation of the survival
+curve. For example use function(y){y*100}. Often used transformations can be
+specified with a character argument instead: "event" plots cumulative events
+(f(y) = 1-y), "cumhaz" plots the cumulative hazard function (f(y) =
 -log(y)), and "cloglog" creates a complimentary log-log survival plot (f(y)
 = log(-log(y)) along with log scale for the x-axis).}
 
@@ -29,9 +37,9 @@ events (f(y) = 1-y), "cumhaz" plots the cumulative hazard function (f(y) =
 ignored when the number of strata (groups > 1). In this case, use the
 argument palette.}
 
-\item{palette}{the color palette to be used. Allowed values include "grey" for
-grey color palettes; brewer palettes e.g. "RdBu", "Blues", ...; or custom
-color palette e.g. c("blue", "red").}
+\item{palette}{the color palette to be used. Allowed values include "hue" for
+the default hue color scale; "grey" for grey color palettes; brewer palettes
+e.g. "RdBu", "Blues", ...; or custom color palette e.g. c("blue", "red").}
 
 \item{break.time.by}{numeric value controlling time axis breaks. Default value
 is NULL.}
@@ -54,37 +62,46 @@ coordinates of the p-value. Default values are NULL.}
 
 \item{main, xlab, ylab}{main title and axis labels}
 
+\item{font.main, font.x, font.y, font.tickslab, font.legend}{a vector of length 3
+indicating respectively the size (e.g.: 14), the style (e.g.: "plain",
+"bold", "italic", "bold.italic") and the color (e.g.: "red") of main title,
+xlab and ylab and axis tick labels, respectively. For example \emph{font.x =
+c(14, "bold", "red")}.  Use font.x = 14, to change only font size; or use
+font.x = "bold", to change only font face.}
+
 \item{xlim, ylim}{x and y axis limits e.g. xlim = c(0, 1000), ylim = c(0, 1).}
 
 \item{legend}{character specifying legend position. Allowed values are one of
-c("top", "bottom", "left", "right", "none"). Default is "top" side
-position. to remove the legend use legend = "none". Legend position can be
-also specified using a numeric vector c(x, y); see details section.}
+c("top", "bottom", "left", "right", "none"). Default is "top" side position.
+to remove the legend use legend = "none". Legend position can be also
+specified using a numeric vector c(x, y); see details section.}
 
 \item{legend.title}{legend title.}
 
-\item{legend.labs}{character vector specifying legend labels.}
+\item{legend.labs}{character vector specifying legend labels. Used to replace
+the names of the strata from the fit. Should be given in the same order as
+those strata.}
 
 \item{risk.table}{logical value specifying whether to show risk table. Default
 is FALSE.}
+
+\item{risk.table.title}{Title to be used for risk table.}
 
 \item{risk.table.col}{color to be used for risk table. Default value is
 "black". If you want to color by strata (i.e. groups), use risk.table.col =
 "strata".}
 
-\item{risk.table.adj}{numeric value, used to adjust the location of the risk
-table. Negative value will shift the table to the left and positive value
-will shift the table to the right side. Ignored when risk.table = FALSE.}
+\item{risk.table.fontsize}{font size to be used for the risk table.}
+
+\item{risk.table.y.text.col}{logical. Default value is FALSE. If TRUE, risk
+table tick labels will be colored by strata.}
 
 \item{risk.table.height}{the height of the risk table on the grid. Increase
 the value when you have many strata. Default is 0.25. Ignored when
 risk.table = FALSE.}
 
-\item{surv.plot.adj}{numeric value, used to adjust survival plot (like
-risk.table.adj). Ignored when risk.table = FALSE.}
-
 \item{surv.plot.height}{the height of the survival plot on the grid. Default
-is 2. Ignored when risk.table = FALSE.}
+is 0.75. Ignored when risk.table = FALSE.}
 
 \item{ggtheme}{function, ggplot2 theme name. Default value is theme_classic().
 Allowed values include ggplot2 official themes: theme_gray(), theme_bw(),
@@ -92,9 +109,13 @@ theme_minimal(), theme_classic(), theme_void(), ....}
 
 \item{...}{other arguments to be passed to ggplot2 geom_*() functions such as
 linetype, size, ...}
+
+\item{x}{an object of class ggsurvplot}
 }
 \value{
-return a ggplot2 (when risk.table = FALSE).
+return an object of class ggsurvplot which is list containing two
+ ggplot objects, including: \itemize{ \item plot: the survival plot \item
+ table: the number at risk table per time }
 }
 \description{
 Drawing survival curves using ggplot2
@@ -107,6 +128,10 @@ Drawing survival curves using ggplot2
  left" and c(1,1) corresponds to the "top right" position. For instance use
  legend = c(0.8, 0.2).
 }
+\section{Functions}{
+\itemize{
+\item \code{ggsurvplot}: Draws survival curves using ggplot2.
+}}
 \examples{
 
 #\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%
@@ -120,6 +145,17 @@ fit<- survfit(Surv(time, status) ~ sex, data = lung)
 
 # Drawing survival curves
 ggsurvplot(fit)
+
+# Change font size, style and color
+#++++++++++++++++++++++++++++++++++++
+\dontrun{
+# Change font size, style and color at the same time
+ggsurvplot(fit, main = "Survival curve",
+   font.main = c(16, "bold", "darkblue"),
+   font.x = c(14, "bold.italic", "red"),
+   font.y = c(14, "bold.italic", "darkred"),
+   font.tickslab = c(12, "plain", "darkgreen"))
+}
 
 # Legend: title, labels and position
 #++++++++++++++++++++++++++++++++++++
@@ -147,17 +183,11 @@ ggsurvplot(fit,  size = 1,  # change line size
 )
 
 # Use brewer color palette "Dark2"
+# Add risk table
 ggsurvplot(fit, linetype = "strata",
           conf.int = TRUE, pval = TRUE,
-          palette = "Dark2")
+          palette = "Dark2", risk.table = TRUE)
 
-
-# Add risk table
-#++++++++++++++++++++++++++++++++++++
-
-# Add Risk table
-ggsurvplot(fit, pval = TRUE, conf.int = TRUE,
-          risk.table = TRUE)
 
 # Change color, linetype by strata, risk.table color by strata
 ggsurvplot(fit,
@@ -168,22 +198,6 @@ ggsurvplot(fit,
           ggtheme = theme_bw(), # Change ggplot2 theme
           palette = c("#E7B800", "#2E9FDF"))
 
-# Survival curve transformation
-#++++++++++++++++++++++++++++++++++++
-# Plot cumulative events
-ggsurvplot(fit, conf.int = TRUE,
-          palette = c("#FF9E29", "#86AA00"),
-          risk.table = TRUE, risk.table.col = "strata",
-          fun = "event")
-
-
-# Arbitrary function
-ggsurvplot(fit, conf.int = TRUE,
-          palette = c("#FF9E29", "#86AA00"),
-          risk.table = TRUE, risk.table.col = "strata",
-          pval = TRUE,
-          fun = function(y) y*100)
-
 
 #\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%
 # Example 3: Survival curve with multiple group
@@ -191,7 +205,7 @@ ggsurvplot(fit, conf.int = TRUE,
 
 # Fit (complexe) survival curves
 #++++++++++++++++++++++++++++++++++++
-
+\dontrun{
 require("survival")
 fit2 <- survfit( Surv(time, status) ~ rx + adhere,
                 data = colon )
@@ -201,41 +215,13 @@ fit2 <- survfit( Surv(time, status) ~ rx + adhere,
 
 # Visualize: add p-value, chang y limits
 # change color using brewer palette
-ggsurvplot(fit2, pval = TRUE,
-          break.time.by = 400,
-          risk.table = TRUE)
-
-# Adjust risk table and survival plot locations
-# ++++++++++++++++++++++++++++++++++++
-# Adjust risk table location, shift to the left
-
-ggsurvplot(fit2, pval = TRUE,
-          break.time.by = 400,
-          risk.table = TRUE,
-          risk.table.col = "strata",
-          risk.table.adj = -2, # risk table location adj
-          palette = "Dark2")
-
-# Adjust survival plot location, shift to the right
-# Change Risk table height
+# Adjust risk table and survival plot heights
 ggsurvplot(fit2, pval = TRUE,
           break.time.by = 400,
           risk.table = TRUE,
           risk.table.col = "strata",
           risk.table.height = 0.5, # Useful when you have multiple groups
-          surv.plot.adj = 4.9, # surv plot location adj
           palette = "Dark2")
-
-
-# Change legend labels
-# ++++++++++++++++++++++++++++++++++++
-\dontrun{
-ggsurvplot(fit2, pval = TRUE,
-          break.time.by = 400,
-          risk.table = TRUE,
-          risk.table.col = "strata",
-          ggtheme = theme_bw(),
-          legend.labs = c("A", "B", "C", "D", "E", "F"))
 }
 
 }
