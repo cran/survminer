@@ -1,3 +1,26 @@
+# survminer 0.2.1
+
+## New features
+
+- New `ggcoxzph` function that displays a graph of the scaled Schoenfeld residuals, along with a smooth curve using 'ggplot2'. Wrapper around \link{plot.cox.zph}. ([@MarcinKosinski, #13](https://github.com/kassambara/survminer/issues/13))
+
+- New `ggcoxfunctional` function that displays graphs of continuous explanatory variable against martingale residuals of null
+ cox proportional hazards model, for each term in of the right side of input formula. This might help to properly choose the functional form of continuous variable in cox model, since fitted lines with `lowess` function should be linear to satisfy cox proportional hazards model assumptions. ([@MarcinKosinski, #14](https://github.com/kassambara/survminer/issues/14))
+ 
+- New function `theme_classic2`: ggplot2 classic theme with axis line. This function replaces ggplot2::theme_classic, which does no longer display axis lines (since ggplot2 v2.1.0)
+   
+## Minor changes
+
+- post-customization of color and fill no longer shows warnings like "Scale for 'fill' is already present. Adding another scale for 'fill', which will replace the existing scale" ([@MarcinKosinski, #11](https://github.com/kassambara/survminer/issues/11)).
+- now, post-customization of survival curve colors will automatically affect the risk table y axis text colors ([@MarcinKosinski, #11](https://github.com/kassambara/survminer/issues/12)).
+- Default value for the argument `risk.table.y.text.col` is now TRUE.
+- New argument risk.table.y.text for the function `ggsurvplot`. logical argument. Default is TRUE. If FALSE, risk table y axis tick labels will be hidden ([@MarcinKosinski, #28](https://github.com/kassambara/survminer/issues/28)).
+   
+   
+## Bug fixes
+   
+- Black dots removed from risk table ([@Feli-Anna, #25](https://github.com/kassambara/survminer/issues/25))
+
 # survminer 0.2.0
 
 
@@ -16,20 +39,17 @@
     
 - It's now possible to customize the output survival *plot* and the *risk table* returned by ggsurvplot, and to print again the final plot.  ([@MarcinKosinski, #2](https://github.com/kassambara/survminer/issues/2)):
   
-```{r}
+```
 # Fit survival curves
-#++++++++++++++++++++++++++++++++++++
 require("survival")
 fit<- survfit(Surv(time, status) ~ sex, data = lung)
 
 # visualize
-#++++++++++++++++++++++++++++++++++++
 require(survminer)
 ggsurvplot(fit, pval = TRUE, conf.int = TRUE,
           risk.table = TRUE)
 
 # Customize the output and then print
-#++++++++++++++++++++++++++++++++++++
 res <- ggsurvplot(fit, pval = TRUE, conf.int = TRUE,
            risk.table = TRUE)
 res$table <- res$table + theme(axis.line = element_blank())
