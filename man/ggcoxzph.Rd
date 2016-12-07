@@ -40,7 +40,7 @@ c(14, "bold", "red")}.  Use font.x = 14, to change only font size; or use
 font.x = "bold", to change only font face.}
 
 \item{ggtheme}{function, ggplot2 theme name. Default value is \link{theme_classic2}.
-Allowed values include ggplot2 official themes: see \link{ggtheme}.}
+Allowed values include ggplot2 official themes: see \code{\link[ggplot2]{theme}}.}
 
 \item{x}{an object of class ggcoxzph}
 
@@ -60,9 +60,14 @@ Displays a graph of the scaled Schoenfeld residuals, along with a
 \examples{
 
 library(survival)
-fit <- coxph(Surv(futime, fustat) ~ age + ecog.ps, data=ovarian)
+fit <- coxph(Surv(futime, fustat) ~ age + ecog.ps + rx, data=ovarian)
 cox.zph.fit <- cox.zph(fit)
+# plot all variables
 ggcoxzph(cox.zph.fit)
+# plot all variables in specified order
+ggcoxzph(cox.zph.fit, var = c("ecog.ps", "rx", "age"))
+# plot specified variables in specified order
+ggcoxzph(cox.zph.fit, var = c("ecog.ps", "rx"))
 
 }
 \author{
