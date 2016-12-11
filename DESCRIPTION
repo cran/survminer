@@ -1,8 +1,8 @@
 Package: survminer
 Type: Package
 Title: Drawing Survival Curves using 'ggplot2'
-Version: 0.2.3
-Date: 2016-12-06
+Version: 0.2.4
+Date: 2016-12-10
 Authors@R: c(
     person("Alboukadel", "Kassambara", role = c("aut", "cre"), email = "alboukadel.kassambara@gmail.com"),
     person("Marcin", "Kosinski", role = c("aut"), email = "m.p.kosinski@@gmail.com")
@@ -25,9 +25,9 @@ Collate: 'ggcoxdiagnostics.R' 'utilities.R' 'ggcoxfunctional.R'
         'ggcoxzph.R' 'surv_summary.R' 'theme_classic2.R' 'ggsurvplot.R'
         'myeloma.R' 'surv_cutpoint.R'
 NeedsCompilation: no
-Packaged: 2016-12-07 06:07:37 UTC; kass
+Packaged: 2016-12-10 23:25:17 UTC; kassambara
 Author: Alboukadel Kassambara [aut, cre],
   Marcin Kosinski [aut]
 Maintainer: Alboukadel Kassambara <alboukadel.kassambara@gmail.com>
 Repository: CRAN
-Date/Publication: 2016-12-07 08:43:57
+Date/Publication: 2016-12-11 12:26:42
