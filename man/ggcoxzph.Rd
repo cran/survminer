@@ -7,11 +7,9 @@
 \usage{
 ggcoxzph(fit, resid = TRUE, se = TRUE, df = 4, nsmo = 40, var,
   point.col = "red", point.size = 1, point.shape = 19, point.alpha = 1,
-  font.main = c(16, "plain", "black"), font.x = c(14, "plain", "black"),
-  font.y = c(14, "plain", "black"), font.tickslab = c(12, "plain", "black"),
-  ggtheme = theme_classic2())
+  caption = NULL, ggtheme = theme_survminer(), ...)
 
-\method{print}{ggcoxzph}(x, ...)
+\method{print}{ggcoxzph}(x, ..., newpage = TRUE)
 }
 \arguments{
 \item{fit}{an object of class \link{cox.zph}.}
@@ -32,19 +30,16 @@ are produced in turn for each variable of a model.}
 
 \item{point.col, point.size, point.shape, point.alpha}{color, size, shape and visibility to be used for points.}
 
-\item{font.main, font.x, font.y, font.tickslab}{a vector of length 3
-indicating respectively the size (e.g.: 14), the style (e.g.: "plain",
-"bold", "italic", "bold.italic") and the color (e.g.: "red") of main title,
-xlab and ylab and axis tick labels, respectively. For example \emph{font.x =
-c(14, "bold", "red")}.  Use font.x = 14, to change only font size; or use
-font.x = "bold", to change only font face.}
+\item{caption}{the caption of the final \link{grob} (\code{bottom} in \link{arrangeGrob})}
 
 \item{ggtheme}{function, ggplot2 theme name. Default value is \link{theme_classic2}.
 Allowed values include ggplot2 official themes: see \code{\link[ggplot2]{theme}}.}
 
+\item{...}{further arguments passed to either the print() function or to the \code{\link[ggpubr]{ggpar}} function for customizing the plot (see Details section).}
+
 \item{x}{an object of class ggcoxzph}
 
-\item{...}{further arguments passed to print, but really it's unused}
+\item{newpage}{open a new page. See \code{\link{grid.arrange}}.}
 }
 \value{
 Returns an object of class \code{ggcoxzph} which is a list of ggplots.
@@ -53,10 +48,23 @@ Returns an object of class \code{ggcoxzph} which is a list of ggplots.
 Displays a graph of the scaled Schoenfeld residuals, along with a
  smooth curve using \pkg{ggplot2}. Wrapper around \link{plot.cox.zph}.
 }
+\details{
+\strong{Customizing the plots}: The plot can be easily
+ customized using additional arguments to be passed to the function ggpar().
+ Read ?ggpubr::ggpar. These arguments include
+ \emph{font.main,font.submain,font.caption,font.x,font.y,font.tickslab,font.legend}:
+ a vector of length 3 indicating respectively the size (e.g.: 14), the style
+ (e.g.: "plain", "bold", "italic", "bold.italic") and the color (e.g.: "red")
+ of main title, subtitle, caption, xlab and ylab and axis tick labels,
+ respectively. For example \emph{font.x = c(14, "bold", "red")}.  Use font.x
+ = 14, to change only font size; or use font.x = "bold", to change only font
+ face.
+}
 \section{Functions}{
 \itemize{
 \item \code{ggcoxzph}: Graphical Test of Proportional Hazards using ggplot2.
 }}
+
 \examples{
 
 library(survival)
@@ -65,12 +73,11 @@ cox.zph.fit <- cox.zph(fit)
 # plot all variables
 ggcoxzph(cox.zph.fit)
 # plot all variables in specified order
-ggcoxzph(cox.zph.fit, var = c("ecog.ps", "rx", "age"))
+ggcoxzph(cox.zph.fit, var = c("ecog.ps", "rx", "age"), font.main = 12)
 # plot specified variables in specified order
-ggcoxzph(cox.zph.fit, var = c("ecog.ps", "rx"))
+ggcoxzph(cox.zph.fit, var = c("ecog.ps", "rx"), font.main = 12, caption = "Caption goes here")
 
 }
 \author{
 Marcin Kosinski , \email{m.p.kosinski@gmail.com}
 }
-

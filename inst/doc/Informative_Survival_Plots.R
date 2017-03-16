@@ -27,11 +27,12 @@ library(survival)
 fit <- survfit(Surv(times, patient.vital_status) ~ admin.disease_code,
                data = BRCAOV.survInfo)
 # Visualize with survminer
-ggsurvplot(fit, risk.table = TRUE)
+ggsurvplot(fit, data = BRCAOV.survInfo, risk.table = TRUE)
 
 ## ---- fig.width=10----------------------------------------------------------------------------------------------------------------------------------
 ggsurvplot(
    fit,                     # survfit object with calculated statistics.
+   data = BRCAOV.survInfo,  # data used to fit survival curves. 
    risk.table = TRUE,       # show risk table.
    pval = TRUE,             # show p-value of log-rank test.
    conf.int = TRUE,         # show confidence intervals for 

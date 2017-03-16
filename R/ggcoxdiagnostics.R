@@ -7,22 +7,24 @@
 #'residual desired. Possible values are \code{"martingale", "deviance", "score", "schoenfeld", "dfbeta", "dfbetas"}
 #' and \code{"scaledsch"}. Only enough of the string to
 #' determine a unique match is required.
-#' @param linear.predictions a logical value indicating whether to show linear
+#' @param linear.predictions (deprecated, see \code{ox.scale}) a logical value indicating whether to show linear
 #' predictions for observations (\code{TRUE}) or just indexed of observations
 #' (\code{FALSE}) on X axis.
-#'@param ... furthere arguments passed to \link{residuals.coxph}.
+#' @param ox.scale one value from \code{c("linear.predictions", "observation.id", "time")}.
+#' It defines what will be presented on OX scale. Possible values: y hat for \code{"linear.predictions"},
+#' Id of an observation for \code{"observation.id"} or Time for \code{"time"}.
+#'@param ... further arguments passed to \code{\link[survival]{residuals.coxph}} or
+#' to the function \code{\link[ggpubr]{ggpar}} for customizing the plot.
 #'@param point.col,point.size,point.shape,point.alpha color, size, shape and visibility to be used for points.
 #'@param hline.col,hline.size,hline.lty,hline.alpha,hline.yintercept color, size, linetype, visibility and Y-axis coordinate to be used for \link{geom_hline}.
 #'Used only when \code{hline = TRUE}.
+#'@param sline.col,sline.size,sline.lty,sline.alpha color, size, linetype and visibility to be used for \link{geom_smooth}.
+#'Used only when \code{sline = TRUE}.
 #'@param hline a logical - should the horizontal line be added to highlight the \code{Y=0} level.
+#'@param sline,sline.se a logical - should the smooth line be added to highlight the local average for residuals.
 #'@param ggtheme function, ggplot2 theme name. Default value is ggplot2::theme_bw().
 #'  Allowed values include ggplot2 official themes: see \code{\link[ggplot2]{theme}}.
-#'@param font.main,font.x,font.y,font.tickslab a vector of length 3
-#'  indicating respectively the size (e.g.: 14), the style (e.g.: "plain",
-#'  "bold", "italic", "bold.italic") and the color (e.g.: "red") of main title,
-#'  xlab and ylab and axis tick labels, respectively. For example \emph{font.x =
-#'  c(14, "bold", "red")}.  Use font.x = 14, to change only font size; or use
-#'  font.x = "bold", to change only font face.
+#'@param title,subtitle,caption main title, subtitle and caption.
 #'
 #'@return Returns an object of class \code{ggplot}.
 #'
@@ -57,19 +59,30 @@
 #' coxph.fit2 <- coxph(Surv(futime, fustat) ~ age + ecog.ps, data=ovarian)
 #' ggcoxdiagnostics(coxph.fit2, type = "deviance")
 #'
+#' ggcoxdiagnostics(coxph.fit2, type = "schoenfeld", title = "Diagnostic plot")
+#' ggcoxdiagnostics(coxph.fit2, type = "deviance", ox.scale = "time")
+#' ggcoxdiagnostics(coxph.fit2, type = "schoenfeld", ox.scale = "time",
+#'                  title = "Diagnostic plot", subtitle = "Data comes from survey XYZ",
+#'                  font.subtitle = 9)
+#' ggcoxdiagnostics(coxph.fit2, type = "deviance", ox.scale = "linear.predictions",
+#'                  caption = "Code is available here - link", font.caption = 10)
+#' ggcoxdiagnostics(coxph.fit2, type = "schoenfeld", ox.scale = "observation.id")
+#' ggcoxdiagnostics(coxph.fit2, type = "scaledsch", ox.scale = "time")
+#'
 #'@describeIn ggcoxdiagnostics Diagnostic Plots for Cox Proportional Hazards Model with \pkg{ggplot2}
 #'@export
 ggcoxdiagnostics <- function (fit,
                       type = c("martingale", "deviance", "score", "schoenfeld",
                                "dfbeta", "dfbetas", "scaledsch","partial"),
                       ...,
-                      linear.predictions = TRUE,
+                      linear.predictions = type %in% c("martingale", "deviance"),
+                      ox.scale = ifelse(linear.predictions, "linear.predictions", "observation.id"),
                       hline = TRUE,
+                      sline = TRUE, sline.se = TRUE,
                       hline.col = "red", hline.size = 1, hline.alpha = 1, hline.yintercept = 0, hline.lty = 'dashed',
+                      sline.col = "blue", sline.size = 1, sline.alpha = 0.3, sline.lty = 'dashed',
                       point.col = "black", point.size = 1, point.shape = 19, point.alpha = 1,
-                      font.main = c(16, "plain", "black"),
-                      font.x = c(14, "plain", "black"), font.y = c(14, "plain", "black"),
-                      font.tickslab = c(12, "plain", "black"),
+                      title = NULL, subtitle = NULL, caption = NULL,
                       ggtheme = ggplot2::theme_bw()){
 
   model <- fit
@@ -83,10 +96,24 @@ ggcoxdiagnostics <- function (fit,
   xlabel <- "The index number of observations"
   ylabel <- paste0("Residuals (type = ", type, ")" )
 
-  if(linear.predictions){
-    xval <- predict(fit, type="lp")
-    xlabel <- "Linear Predictions"
-  }else xval <- 1:fit$n
+  switch(ox.scale,
+         linear.predictions = {
+           if (!(type %in% c("martingale", "deviance")))
+             warning("ox.scale='linear.predictions' works only with type=martingale/deviance")
+           xval <- predict(fit, type="lp")
+           xlabel <- "Linear Predictions"
+         },
+         observation.id = {
+           xval <- 1:nrow(res)
+           xlabel <- "Observation Id"
+         },
+         time = {
+           if (!(type %in% c("schoenfeld", "scaledsch")))
+             warning("ox.scale='time' works only with type=schoenfeld/scaledsch")
+           xval <- as.numeric(rownames(res))
+           xlabel <- "Time"
+         },
+         {warning("ox.scale should be one of linear.predictions/observation.id/time")})
 
   # Case of multivariate Cox model
   if(type %in% c("martingale", "deviance")) col_names <- "residuals"
@@ -102,14 +129,16 @@ ggcoxdiagnostics <- function (fit,
                        size = point.size, alpha = point.alpha)
 
   if (hline) gplot <- gplot + geom_hline(yintercept=hline.yintercept, col = hline.col,
-                                size = hline.size, lty = hline.lty, alpha = hline.alpha)
+                                         size = hline.size, lty = hline.lty, alpha = hline.alpha)
 
-  gplot <- gplot + labs(x = xlabel, y = ylabel) + ggtheme
+  if (sline) gplot <- gplot + geom_smooth(col = sline.col, se = sline.se, method = "loess",
+                                         size = sline.size, lty = sline.lty, alpha = sline.alpha)
+
+  gplot <- gplot + labs(x = xlabel, y = ylabel, title = title, subtitle = subtitle, caption = caption) + ggtheme
   # customization
-  gplot <-.labs(p = gplot, font.main = font.main, font.x = font.x, font.y = font.y)
-  gplot <- .set_ticks(gplot, font.tickslab = font.tickslab)
+  gplot <- ggpubr::ggpar(gplot, ...)
 
-  gplot <- gplot + facet_wrap(~covariate, scales = "free", ncol = 1)
+  gplot <- gplot + facet_wrap(~covariate, scales = "free")
   gplot
 }
 

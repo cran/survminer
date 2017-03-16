@@ -10,21 +10,19 @@ NULL
 #'cox proportional hazards model, for each term in of the right side of \code{formula}. This might help to properly
 #'choose the functional form of continuous variable in cox model (\link{coxph}). Fitted lines with \link{lowess} function
 #'should be linear to satisfy cox proportional hazards model assumptions.
+#'@param fit an object of class \link{coxph.object} - created with \link{coxph} function.
 #'@param formula a formula object, with the response on the left of a ~ operator, and the terms on the right. The response must be a survival object as returned by the \link{Surv} function.
 #'@param data a \code{data.frame} in which to interpret the variables named in the formula,
 #'@param iter parameter of \link{lowess}.
 #'@param f parameter of \link{lowess}.
 #'@param xlim,ylim x and y axis limits e.g. xlim = c(0, 1000), ylim = c(0, 1).
 #'@param ylab y axis label.
+#'@param title the title of the final \link{grob} (\code{top} in \link{arrangeGrob})
+#'@param caption the caption of the final \link{grob} (\code{bottom} in \link{arrangeGrob})
 #'@param point.col,point.size,point.shape,point.alpha color, size, shape and visibility to be used for points.
-#'@param font.main,font.x,font.y,font.tickslab a vector of length 3
-#'  indicating respectively the size (e.g.: 14), the style (e.g.: "plain",
-#'  "bold", "italic", "bold.italic") and the color (e.g.: "red") of main title,
-#'  xlab and ylab and axis tick labels, respectively. For example \emph{font.x =
-#'  c(14, "bold", "red")}.  Use font.x = 14, to change only font size; or use
-#'  font.x = "bold", to change only font face.
 #'@param ggtheme function, ggplot2 theme name. Default value is \link{theme_classic2}.
 #'  Allowed values include ggplot2 official themes: see \code{\link[ggplot2]{theme}}.
+#'@param ... further arguments passed to the function \code{\link[ggpubr]{ggpar}} for customizing the plot.
 #'@return Returns an object of class \code{ggcoxfunctional} which is a list of ggplots.
 #'
 #'@author Marcin Kosinski , \email{m.p.kosinski@@gmail.com}
@@ -33,21 +31,33 @@ NULL
 #'
 #' library(survival)
 #' data(mgus)
-#' ggcoxfunctional(Surv(futime, death) ~ mspike + log(mspike) + I(mspike^2) +
-#'                   age + I(log(age)^2) + I(sqrt(age)), data = mgus,
-#'                 point.col = "blue", point.alpha = 0.5)
+#' res.cox <- coxph(Surv(futime, death) ~ mspike + log(mspike) + I(mspike^2) +
+#'     age + I(log(age)^2) + I(sqrt(age)), data = mgus)
+#' ggcoxfunctional(res.cox,  data = mgus, point.col = "blue", point.alpha = 0.5)
+#' ggcoxfunctional(res.cox, data = mgus, point.col = "blue", point.alpha = 0.5,
+#'                 title = "Pass the title", caption = "Pass the caption")
 #'
 #'
 #'@describeIn ggcoxfunctional Functional Form of Continuous Variable in Cox Proportional Hazards Model.
 #'@export
-ggcoxfunctional <- function (formula, data, iter = 0, f = 0.6,
+ggcoxfunctional <- function (formula, data = NULL, fit, iter = 0, f = 0.6,
                              point.col = "red", point.size = 1, point.shape = 19, point.alpha = 1,
-                             font.main = c(16, "plain", "black"),
-                             font.x = c(14, "plain", "black"), font.y = c(14, "plain", "black"),
-                             font.tickslab = c(12, "plain", "black"),
                              xlim = NULL, ylim = NULL,
                              ylab = "Martingale Residuals \nof Null Cox Model",
-                             ggtheme = theme_classic2()){
+                             title = NULL, caption = NULL,
+                             ggtheme = theme_survminer(), ...){
+
+  if(!missing(formula)){
+    if(inherits(formula, "coxph")) fit <- formula
+    else{
+      warning("arguments formula is deprecated; ",
+              "will be removed in the next version; ",
+              "please use fit instead.", call. = FALSE)
+      fit <- list(formula = formula, call = list(data = data))
+    }
+  }
+  formula <- fit$formula
+  data <- .get_data(fit, data)
 
   attr(stats::terms(formula), "term.labels") -> explanatory.variables.names
   stats::model.matrix(formula, data = data) -> explanatory.variables.values
@@ -81,23 +91,24 @@ ggcoxfunctional <- function (formula, data, iter = 0, f = 0.6,
       ylab(NULL) +
       ggplot2::coord_cartesian(xlim = xlim, ylim = ylim) -> gplot
 
-    gplot <-.labs(p = gplot, font.main = font.main, font.x = font.x, font.y = font.y)
-    gplot <- .set_ticks(gplot, font.tickslab = font.tickslab)
+    gplot <- ggpubr::ggpar(gplot, ...)
   }) -> plots
 
   names(plots) <- explanatory.variables.names
-  class(plots) <- c("ggcoxfunctional", "list")
+  class(plots) <- c("ggcoxfunctional", "ggsurv", "list")
   attr(plots, "y.text") <- ylab
+  attr(plots, "caption") <- caption
+  attr(plots, "title") <- title
   plots
 
 }
 
 #' @param x an object of class ggcoxfunctional
-#' @param ... further arguments passed to print, but really it's unused
+#' @param newpage open a new page. See \code{\link{grid.arrange}}.
 #' @method print ggcoxfunctional
 #' @rdname ggcoxfunctional
 #' @export
-print.ggcoxfunctional <- function(x, ...){
+print.ggcoxfunctional <- function(x, ..., newpage = TRUE){
   if(!inherits(x, "ggcoxfunctional"))
     stop("An object of class ggcoxfunctional is required.")
   plots <- x
@@ -111,6 +122,9 @@ print.ggcoxfunctional <- function(x, ...){
     grobs[[i]]$widths[2:5] <- as.list(maxwidth)
   }
   y.text <- attr(plots, "y.text")
-  do.call(gridExtra::grid.arrange, c(grobs, left = y.text))
+  caption <- attr(plots, "caption")
+  title <- attr(plots, "title")
+  do.call(gridExtra::grid.arrange, c(grobs, left = y.text, top = title,
+                                     bottom = caption, newpage = newpage))
 }
 
