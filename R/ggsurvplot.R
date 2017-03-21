@@ -484,10 +484,7 @@ ggsurvplot <- function(fit, data = NULL, fun = NULL,
                              fontsize = risk.table.fontsize, ggtheme = ggtheme,
                              xlab = xlab, ylab = legend.title,
                              ...)
-     # For backward compatibility
-     risktable <-  .set_general_gpar(risktable, legend = legend, ...) # general graphical parameters
-     risktable <- .set_risktable_gpar(risktable, legend = legend, ...) # specific graphical params
-     risktable <- risktable  + tables.theme
+     risktable <- risktable + tables.theme
      if(!risk.table.y.text) risktable <- .set_large_dash_as_ytext(risktable)
      # color risk.table ticks by strata
      if(risk.table.y.text.col)
@@ -729,7 +726,7 @@ p <- p + theme(legend.position = "none")
 # Adapt ylab according to the value of the argument fun
 #%%%%%%%%%%%%%%%%%%%%%%%%%
 .check_ylab <- function(ylab, fun){
-  if(!is.null(fun)){
+  if(!is.null(fun) & is.character(fun)){
     if(ylab == "Survival probability"){
       ylab <- switch(fun, log = "log(Survival probability)",
                     event = "Cumulative event",
@@ -925,20 +922,6 @@ p <- p + theme(legend.position = "none")
                 legend = legend, font.legend = extra.params$font.legend)
 }
 
-# Specific graphical params to risk.table
-.set_risktable_gpar <- function(p, legend = "none",  ...){
-  extra.params <- list(...)
-  ggpubr::ggpar(p,
-                 subtitle = extra.params$risk.table.subtitle,
-                 caption = extra.params$risk.table.caption,
-                 font.title = extra.params$font.risk.table.title,
-                 font.x = extra.params$font.risk.table.x,
-                 font.y = extra.params$font.risk.table.y,
-                 font.submain = extra.params$font.risk.table.subtitle,
-                 font.caption = extra.params$font.risk.table.caption,
-                 legend = legend
-  )
-}
 
 # Specific graphical params to ncensor_plot
 .set_ncensorplot_gpar <- function(p, legend = "none", ...){

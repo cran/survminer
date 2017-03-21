@@ -1,3 +1,17 @@
+# survminer 0.3.1
+
+## Minor changes
+
+- The example section of the `ggcoxdiagnostics()` function and the vignette file `Informative_Survival_Plots.Rmd` have been updated so that `survminer` can pass CRAN check under R-oldrelease.
+- New example dataset `BMT` added for competing risk analysis.
+- New data set `BRCAOV.survInfo` added, used in vignette files
+
+
+## Bug fixes
+   
+- Now, `palette` argument works in `ggcoxadjustedcurves() ([#174](https://github.com/kassambara/survminer/issues/174))
+- Now `ggsurvplot()` works when the `fun` argument is an arbitrary function ([#176](https://github.com/kassambara/survminer/issues/176)).
+
 # survminer 0.3.0
    
 ## New features
