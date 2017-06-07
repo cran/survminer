@@ -2,37 +2,40 @@
 % Please edit documentation in R/ggforest.R
 \name{ggforest}
 \alias{ggforest}
-\title{Drawing Forest Plot for CoxPH model}
+\title{Forest Plot for Cox Proportional Hazards Model}
 \usage{
-ggforest(model, alpha = 0.05, plot.title = "Forest plot for coxph model",
-  ggtheme = theme_survminer(), palette = c("black", "red4"),
-  xlab = "Hazard ratio", ...)
+ggforest(model, data = NULL, main = "Hazard ratio", cpositions = c(0.02,
+  0.22, 0.4), fontsize = 0.7, refLabel = "reference", noDigits = 2)
 }
 \arguments{
 \item{model}{an object of class coxph.}
 
-\item{alpha}{significance level for coloring.}
+\item{data}{a dataset used to fit survival curves. If not supplied then data
+will be extracted from 'fit' object.}
 
-\item{plot.title}{legend title.}
+\item{main}{title of the plot.}
 
-\item{ggtheme}{function, ggplot2 theme name. Default value is theme_classic2. Allowed values include ggplot2 official themes: see theme.}
+\item{cpositions}{relative positions of first three columns in the OX scale.}
 
-\item{palette}{the color palette to be used for coloring of significant variables.}
+\item{fontsize}{relative size of annotations in the plot. Default value: 0.7.}
 
-\item{xlab}{Label in OX axis.}
+\item{refLabel}{label for reference levels of factor variables.}
 
-\item{...}{further arguments passed to the function \code{\link[ggpubr]{ggpar}} for customizing the plot.}
+\item{noDigits}{number of digits for estimates and p-values in the plot.}
 }
 \value{
-return an object of class ggplot
+return an grid object
 }
 \description{
-Drawing Forest Plot for CoxPH model
+Drawing Forest Plot for Cox proportional hazards model. In two panels the model structure is presented.
 }
 \examples{
 require("survival")
 model <- coxph( Surv(time, status) ~ sex + rx + adhere,
                 data = colon )
+ggforest(model)
+
+model <- coxph( Surv(time, status) ~ sex+rx, data = colon )
 ggforest(model)
 
 }

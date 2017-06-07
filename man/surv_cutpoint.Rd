@@ -18,8 +18,8 @@ surv_categorize(x, variables = NULL, labels = c("low", "high"))
 
 \method{print}{surv_cutpoint}(x, ...)
 
-\method{plot}{surv_cutpoint}(x, variables = NULL,
-  ggtheme = theme_classic2(), bins = 30, ...)
+\method{plot}{surv_cutpoint}(x, variables = NULL, ggtheme = theme_classic(),
+  bins = 30, ...)
 
 \method{print}{plot_surv_cutpoint}(x, ..., newpage = TRUE)
 }
@@ -45,7 +45,7 @@ shown only, when the number of variables > 5.}
 \item{...}{other arguments. For plots, see ?ggpubr::ggpar}
 
 \item{ggtheme}{function, ggplot2 theme name. Default value is
-\link{theme_classic2}. Allowed values include ggplot2 official themes. see
+\link{theme_classic}. Allowed values include ggplot2 official themes. see
 ?ggplot2::ggtheme.}
 
 \item{bins}{Number of bins for histogram. Defaults to 30.}
@@ -71,8 +71,6 @@ shown only, when the number of variables > 5.}
  'surv_categorize', which is a data frame containing the survival data and
  the categorized variables.
 
-
-
  }
 }
 \description{
@@ -81,15 +79,11 @@ Determine the optimal cutpoint for one or multiple continuous
  'maxstat' R package. This is an outcome-oriented  methods  providing  a
  value of a cutpoint that correspond to the most significant relation with
  outcome (here, survival).
+ \itemize{
+ \item \code{surv_cutpoint()}: Determine the optimal cutpoint for each variable using 'maxstat'.
+ \item \code{surv_categorize()}: Divide each variable values based on the cutpoint returned by \code{surv_cutpoint()}.
+ }
 }
-\section{Functions}{
-\itemize{
-\item \code{surv_cutpoint}: Determine the optimal cutpoint for each variable
-using 'maxstat'
-
-\item \code{surv_categorize}: Divide each variable values based on the cutpoint returned by surv_cutpoint().
-}}
-
 \examples{
 # 0. Load some data
 data(myeloma)

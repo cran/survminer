@@ -1,11 +1,11 @@
-#' Distribution of Event's Times
+#' Distribution of Events' Times
 #'
 #' @param surv an object of \link{Surv}. If not suplied, the censoring variable is extracted from the model.
 #' @param fit an object of class \link{survfit}.
 #' @param data a dataset for predictions. If not supplied then data will be extracted from `fit` object.
 #' @param type one of \code{c("cumulative", "radius", "fraction")}. \code{"cumulative"} stands for cumulative number of events, \code{"radius"} stands for number of events within a given radius,
 #' @param normalized if \code{TRUE} relative number of events is presented,
-#' @param ggtheme function, ggplot2 theme name. Default value is theme_classic2. Allowed values include ggplot2 official themes: see theme.
+#' @param ggtheme function, ggplot2 theme name.  Allowed values include ggplot2 official themes: see theme.
 #' @param censored.on.top is TRUE then censored events are on the top
 #' @param palette the color palette to be used for coloring of significant variables.
 #' @param ... other graphical parameters to be passed to the function \link[ggpubr]{ggpar}.
@@ -74,12 +74,12 @@ ggsurvevents <- function(surv = NULL,
       surv$cum1[i] <- sum(surv$time[surv$status == 1] <= surv$time[i], na.rm=TRUE)
     }
     if (type == "radius") {
-      plot.title = "Distribution Of Events's Times"
+      plot.title = "Distribution Of Events' Times"
       surv$cum0[i] <- sum(abs(surv$time[surv$status == 0] - surv$time[i]) < radius, na.rm=TRUE)
       surv$cum1[i] <- sum(abs(surv$time[surv$status == 1] - surv$time[i]) < radius, na.rm=TRUE)
     }
     if (type == "fraction") {
-      plot.title = "Distribution Of Events's Times"
+      plot.title = "Distribution Of Events' Times"
       surv$cum0[i] <- sum(abs(surv$timeN[surv$status == 0] - surv$timeN[i]) < radiusN, na.rm=TRUE)
       surv$cum1[i] <- sum(abs(surv$timeN[surv$status == 1] - surv$timeN[i]) < radiusN, na.rm=TRUE)
     }

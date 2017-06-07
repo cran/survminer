@@ -5,6 +5,10 @@
 #'  'maxstat' R package. This is an outcome-oriented  methods  providing  a
 #'  value of a cutpoint that correspond to the most significant relation with
 #'  outcome (here, survival).
+#'  \itemize{
+#'  \item \code{surv_cutpoint()}: Determine the optimal cutpoint for each variable using 'maxstat'.
+#'  \item \code{surv_categorize()}: Divide each variable values based on the cutpoint returned by \code{surv_cutpoint()}.
+#'  }
 #'@param data a data frame containing survival information (time, event) and
 #'  continuous variables (e.g.: gene expression data).
 #'@param time,event column names containing time and event data, respectively.
@@ -14,9 +18,6 @@
 #'@param minprop the minimal proportion of observations per group.
 #'@param progressbar logical value. If TRUE, show progress bar. Progressbar is
 #'  shown only, when the number of variables > 5.
-#'
-#'
-#'
 #'
 #'@return \itemize{
 #'
@@ -35,8 +36,6 @@
 #'  \item \bold{surv_categorize()}: returns an object of class
 #'  'surv_categorize', which is a data frame containing the survival data and
 #'  the categorized variables.
-#'
-#'
 #'
 #'  }
 #'
@@ -66,8 +65,7 @@
 #' fit <- survfit(Surv(time, event) ~DEPDC1, data = res.cat)
 #' ggsurvplot(fit, data = res.cat, risk.table = TRUE, conf.int = TRUE)
 #'
-#'@describeIn surv_cutpoint Determine the optimal cutpoint for each variable
-#'  using 'maxstat'
+#'@rdname surv_cutpoint
 #'@export
 surv_cutpoint <- function(data, time = "time", event = "event", variables,
                     minprop = 0.1, progressbar = TRUE)
@@ -112,7 +110,7 @@ surv_cutpoint <- function(data, time = "time", event = "event", variables,
 
 #' @param x,object an object of class surv_cutpoint
 #' @param labels labels for the levels of the resulting category.
-#' @describeIn surv_cutpoint Divide each variable values based on the cutpoint returned by surv_cutpoint().
+#' @rdname surv_cutpoint
 #' @export
 surv_categorize <- function(x,  variables = NULL, labels = c("low", "high")){
   if(!inherits(x, "surv_cutpoint"))
@@ -183,13 +181,13 @@ print.surv_cutpoint <- function(x, ...){
 
 
 #' @param ggtheme function, ggplot2 theme name. Default value is
-#'   \link{theme_classic2}. Allowed values include ggplot2 official themes. see
+#'   \link{theme_classic}. Allowed values include ggplot2 official themes. see
 #'   ?ggplot2::ggtheme.
 #' @param bins Number of bins for histogram. Defaults to 30.
 #' @method plot surv_cutpoint
 #' @rdname surv_cutpoint
 #' @export
-plot.surv_cutpoint <- function(x, variables = NULL, ggtheme = theme_classic2(), bins = 30, ...)
+plot.surv_cutpoint <- function(x, variables = NULL, ggtheme = theme_classic(), bins = 30, ...)
   {
 
   if(!inherits(x, "surv_cutpoint"))
@@ -273,7 +271,7 @@ print.plot_surv_cutpoint <- function(x, ..., newpage = TRUE){
 # Helper function
 # %%%%%%%%%%%%%%%%%%%%%
 
-.ggpar <- function(p, ggtheme = theme_classic2(),...){
+.ggpar <- function(p, ggtheme = theme_classic(),...){
   argmt <- list(...)
   p <- ggpubr::ggpar(p, ggtheme = ggtheme,...)
   if(is.null(argmt$font.x)) p <- p + theme(axis.text.x = element_text(face = "plain"))

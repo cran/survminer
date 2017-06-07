@@ -1,5 +1,5 @@
 
-[![Build Status](https://api.travis-ci.org/kassambara/survminer.png)](https://travis-ci.org/kassambara/survminer) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/survminer)](https://cran.r-project.org/package=survminer) [![Downloads](http://cranlogs.r-pkg.org/badges/survminer)](https://cran.r-project.org/package=survminer) [![Total Downloads](http://cranlogs.r-pkg.org/badges/grand-total/survminer?color=orange)](http://cranlogs.r-pkg.org/badges/grand-total/survminer) [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![Pending Pull-Requests](http://githubbadges.herokuapp.com/kassambara/survminer/pulls.svg?style=flat)](https://github.com/kassambara/survminer/pulls) [![Github Issues](http://githubbadges.herokuapp.com/kassambara/survminer/issues.svg)](https://github.com/kassambara/survminer/issues)
+[![Build Status](https://api.travis-ci.org/kassambara/survminer.png)](https://travis-ci.org/kassambara/survminer) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/survminer)](https://cran.r-project.org/package=survminer) [![Downloads](http://cranlogs.r-pkg.org/badges/survminer)](https://cran.r-project.org/package=survminer) [![Total Downloads](http://cranlogs.r-pkg.org/badges/grand-total/survminer?color=orange)](http://cranlogs.r-pkg.org/badges/grand-total/survminer)
 
 <br/>
 
@@ -8,6 +8,7 @@
     -   [ggsurvplot: Drawing survival curves](#ggsurvplot-drawing-survival-curves)
         -   [Fitting survival curves](#fitting-survival-curves)
         -   [Basic plots](#basic-plots)
+        -   [Computing and passing p-values](#computing-and-passin-p-values)
         -   [Customized survival curves](#customized-survival-curves)
         -   [More customized survival curves](#more-customized-survival-curves)
         -   [Uber customized survival curves](#uber-customized-survival-curves)
@@ -24,7 +25,7 @@ The main functions, in the package, are organized in different categories as fol
 
 **Survival Curves**
 <hr/>
--   **ggsurvplot**(): Draws survival curves with the 'number at risk' table and 'censoring count plot'.
+-   **ggsurvplot**(): Draws survival curves with the 'number at risk' table, the cumulative number of events table and the cumulative number of censored subjects table.
 
 -   **arrange\_ggsurvplots**(): Arranges multiple ggsurvplots on the same page.
 
@@ -104,19 +105,30 @@ ggsurvplot(fit, data = lung)
 
 ![](tools/README-ggplot2-basic-survival-plot-1.png)
 
+Censor shape can be changed as follow:
+
+``` r
+ggsurvplot(fit, data = lung, censor.shape="|", censor.size = 4)
+```
+
 ### Customized survival curves
 
 ``` r
-ggsurvplot(fit, data = lung, size = 1,  # change line size
-           palette = c("#E7B800", "#2E9FDF"), # custom color palettes
-           conf.int = TRUE, # Add confidence interval
-           pval = TRUE, # Add p-value
-           risk.table = TRUE, # Add risk table
-           risk.table.col = "strata", # Risk table color by groups
-           legend.labs = c("Male", "Female"), # Change legend labels
-           risk.table.height = 0.25, # Useful to change when you have multiple groups
-           ggtheme = theme_bw() # Change ggplot2 theme
-           )
+ggsurvplot(
+  fit, 
+  data = lung, 
+  size = 1,                 # change line size
+  palette = 
+    c("#E7B800", "#2E9FDF"),# custom color palettes
+  conf.int = TRUE,          # Add confidence interval
+  pval = TRUE,              # Add p-value
+  risk.table = TRUE,        # Add risk table
+  risk.table.col = "strata",# Risk table color by groups
+  legend.labs = 
+    c("Male", "Female"),    # Change legend labels
+  risk.table.height = 0.25, # Useful to change when you have multiple groups
+  ggtheme = theme_bw()      # Change ggplot2 theme
+)
 ```
 
 ![](tools/README-ggplot2-customized-survival-plot-1.png)
@@ -158,6 +170,7 @@ ggsurv <- ggsurvplot(
            pval = TRUE,             # show p-value of log-rank test.
            conf.int = TRUE,         # show confidence intervals for 
                                     # point estimates of survival curves.
+           palette = c("#E7B800", "#2E9FDF"),
            xlim = c(0,500),         # present narrower X axis, but not affect
                                     # survival estimates.
            xlab = "Time in days",   # customize X axis label.
@@ -174,9 +187,7 @@ ggsurv <- ggsurvplot(
           legend.labs = 
             c("Male", "Female")    # change legend labels.
         )
-
-# Apply custom color palettes and print
-ggpar(ggsurv, palette = c("#E7B800", "#2E9FDF"))
+ggsurv
 ```
 
 ![](tools/README-ggplot2-uber-customized-survival-plot-1.png)
@@ -188,23 +199,23 @@ ggpar(ggsurv, palette = c("#E7B800", "#2E9FDF"))
 # %%%%%%%%%%%%%%%%%%%%%%%%%%
 # Labels for Survival Curves (plot)
 ggsurv$plot <- ggsurv$plot + labs(
-  title = "Survival curves",                     
+  title    = "Survival curves",                     
   subtitle = "Based on Kaplan-Meier estimates",  
-  caption = "created with survminer"             
+  caption  = "created with survminer"             
   )
 
 # Labels for Risk Table 
 ggsurv$table <- ggsurv$table + labs(
-  title = "Note the risk set sizes",          
+  title    = "Note the risk set sizes",          
   subtitle = "and remember about censoring.", 
-  caption = "source code: website.com"        
+  caption  = "source code: website.com"        
   )
 
 # Labels for ncensor plot 
 ggsurv$ncensor.plot <- ggsurv$ncensor.plot + labs( 
-  title = "Number of censorings", 
+  title    = "Number of censorings", 
   subtitle = "over the time.",
-  caption = "source code: website.com"
+  caption  = "source code: website.com"
   )
 
 # Changing the font size, style and color
@@ -212,18 +223,18 @@ ggsurv$ncensor.plot <- ggsurv$ncensor.plot + labs(
 # Applying the same font style to all the components of ggsurv:
 # survival curves, risk table and censor part
 
-ggsurv <- ggpar(ggsurv,
-          font.title = c(16, "bold", "darkblue"),         
-          font.subtitle = c(15, "bold.italic", "purple"), 
-          font.caption = c(14, "plain", "orange"),        
-          font.x = c(14, "bold.italic", "red"),          
-          font.y = c(14, "bold.italic", "darkred"),      
-          font.tickslab = c(12, "plain", "darkgreen"),
-          legend = "top"
-          )
+ggsurv <- ggpar(
+  ggsurv,
+  font.title    = c(16, "bold", "darkblue"),         
+  font.subtitle = c(15, "bold.italic", "purple"), 
+  font.caption  = c(14, "plain", "orange"),        
+  font.x        = c(14, "bold.italic", "red"),          
+  font.y        = c(14, "bold.italic", "darkred"),      
+  font.xtickslab = c(12, "plain", "darkgreen"),
+  legend = "top"
+)
 
-# Apply custom color palettes and print
-ggpar(ggsurv, palette = c("#E7B800", "#2E9FDF"))
+ggsurv
 ```
 
 ![](tools/README-ggplot2-uber-platinium-customized-survival-plot-1.png)
@@ -235,25 +246,27 @@ Uber platinum premium customized survival curves
 # Using specific fonts for risk table and ncensor plots
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Font for Risk Table
-ggsurv$table <- ggpar(ggsurv$table,
-                      font.title = c(13, "bold.italic", "green"),
-                      font.subtitle = c(15, "bold", "pink"),
-                      font.caption = c(11, "plain", "darkgreen"),
-                      font.x = c(8, "bold.italic", "orange"),
-                      font.y = c(11, "bold.italic", "darkgreen"),
-                      font.tickslab = c(9, "bold", "red")
-                      )
+ggsurv$table <- ggpar(
+  ggsurv$table,
+  font.title    = c(13, "bold.italic", "green"),
+  font.subtitle = c(15, "bold", "pink"),
+  font.caption  = c(11, "plain", "darkgreen"),
+  font.x        = c(8, "bold.italic", "orange"),
+  font.y        = c(11, "bold.italic", "darkgreen"),
+  font.xtickslab = c(9, "bold", "red")
+)
 
 
 # Font for ncensor plot
-ggsurv$ncensor.plot <- ggpar(ggsurv$ncensor.plot,
-                            font.title = c(13, "bold.italic", "green"),
-                            font.subtitle = c(15, "bold", "pink"),
-                            font.caption = c(11, "plain", "darkgreen"),
-                            font.x = c(8, "bold.italic", "orange"),
-                            font.y = c(11, "bold.italic", "darkgreen"),
-                            font.tickslab = c(9, "bold", "red")
-                            )
+ggsurv$ncensor.plot <- ggpar(
+  ggsurv$ncensor.plot,
+  font.title    = c(13, "bold.italic", "green"),
+  font.subtitle = c(15, "bold", "pink"),
+  font.caption  = c(11, "plain", "darkgreen"),
+  font.x        = c(8, "bold.italic", "orange"),
+  font.y        = c(11, "bold.italic", "darkgreen"),
+  font.xtickslab = c(9, "bold", "red")
+)
 
 print(ggsurv)
 ```
