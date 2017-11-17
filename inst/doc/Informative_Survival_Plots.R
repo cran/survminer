@@ -64,23 +64,23 @@ plot(fit, col=c("orange","purple"), lty=c(1:2), lwd=3, # base with some customiz
 legend(100, .2, c("Ovarian Cancer", "Breast Cancer"), 
        lty = c(1:2), col=c("orange","purple"))
 
-## ---- fig.width=10----------------------------------------------------------------------------------------------------------------------------------
-# install.packages('survMisc')
-library(survMisc)
-survMisc:::autoplot.survfit(fit) # no customization
+## ---- fig.width=10, eval=FALSE----------------------------------------------------------------------------------------------------------------------
+#  # install.packages('survMisc')
+#  library(survMisc)
+#  survMisc:::autoplot.survfit(fit) # no customization
+#  
 
-
-## ---- fig.width=10----------------------------------------------------------------------------------------------------------------------------------
-survMisc:::autoplot.survfit( # with some hard customization
-   fit,
-   type = "fill",
-   pVal=TRUE
-) -> fit.survMisc 
-fit.survMisc$table <- fit.survMisc$table +
-   theme_minimal() + # theme(legend.position = "top")
-   coord_cartesian(xlim = c(0,2000))
-fit.survMisc$plot <- fit.survMisc$plot +
-   theme_minimal() + 
-   coord_cartesian(xlim = c(0,2000))
-survMisc:::print.tableAndPlot(fit.survMisc)
+## ---- fig.width=10, eval = FALSE--------------------------------------------------------------------------------------------------------------------
+#  survMisc:::autoplot.survfit( # with some hard customization
+#     fit,
+#     type = "fill",
+#     pVal=TRUE
+#  ) -> fit.survMisc
+#  fit.survMisc$table <- fit.survMisc$table +
+#     theme_minimal() + # theme(legend.position = "top")
+#     coord_cartesian(xlim = c(0,2000))
+#  fit.survMisc$plot <- fit.survMisc$plot +
+#     theme_minimal() +
+#     coord_cartesian(xlim = c(0,2000))
+#  survMisc:::print.tableAndPlot(fit.survMisc)
 

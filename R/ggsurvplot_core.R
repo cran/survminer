@@ -18,7 +18,7 @@ ggsurvplot_core <- function(fit, data = NULL, fun = NULL,
                             xlim = NULL, ylim = NULL, axes.offset = TRUE,
                             legend = c("top", "bottom", "left", "right", "none"),
                             legend.title = "Strata", legend.labs = NULL,
-                            fontsize = 4.5,
+                            fontsize = 4.5, font.family = "",
                             tables.height = 0.25, tables.y.text = TRUE, tables.col = "black",
                             tables.y.text.col = TRUE,
                             risk.table = FALSE, risk.table.pos = c("out", "in"), risk.table.title = NULL,
@@ -117,10 +117,12 @@ ggsurvplot_core <- function(fit, data = NULL, fun = NULL,
 
   if(pval$pval.txt != ""){
     p <- p + ggplot2::annotate("text", x = pval$pval.x, y = pval$pval.y,
-                               label = pval$pval.txt, size = pval.size, hjust = 0)
+                               label = pval$pval.txt, size = pval.size, hjust = 0,
+                               family = font.family)
     if(pval.method)
       p <- p + ggplot2::annotate("text", x = pval$method.x, y = pval$method.y,
-                                 label = pval$method, size = pval.method.size, hjust = 0)
+                                 label = pval$method, size = pval.method.size, hjust = 0,
+                                 family = font.family)
   }
 
 
@@ -155,6 +157,7 @@ ggsurvplot_core <- function(fit, data = NULL, fun = NULL,
   pms$tables.theme <- tables.theme
   pms$y.text <- tables.y.text
   pms$color <- tables.col
+  pms$font.family <- font.family
 
 
   # Add risk table
