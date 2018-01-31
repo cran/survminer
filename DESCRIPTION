@@ -1,8 +1,8 @@
 Package: survminer
 Type: Package
 Title: Drawing Survival Curves using 'ggplot2'
-Version: 0.4.1
-Date: 2017-11-17
+Version: 0.4.2
+Date: 2018-01-31
 Authors@R: c(
     person("Alboukadel", "Kassambara", role = c("aut", "cre"), email = "alboukadel.kassambara@gmail.com"),
     person("Marcin", "Kosinski", role = c("aut"), email = "m.p.kosinski@@gmail.com"),
@@ -14,11 +14,11 @@ Description: Contains the function 'ggsurvplot()' for drawing easily beautiful
     adjusted curves for `Cox` model and to visually examine 'Cox' model assumptions.
 License: GPL-2
 LazyData: TRUE
-Depends: ggplot2, ggpubr(>= 0.1.3)
+Depends: ggplot2, ggpubr(>= 0.1.6)
 Imports: grid, gridExtra(>= 2.0), magrittr, maxstat, methods, scales,
         survival, stats, broom, dplyr, tidyr, survMisc, cmprsk, purrr,
         tibble
-Suggests: knitr, KMsurv, flexsurv
+Suggests: knitr, flexsurv
 VignetteBuilder: knitr
 URL: http://www.sthda.com/english/rpkgs/survminer/
 BugReports: https://github.com/kassambara/survminer/issues
@@ -35,11 +35,11 @@ Collate: 'BMT.R' 'BRCAOV.survInfo.R' 'add_ggsurvplot.R' 'utilities.R'
         'surv_cutpoint.R' 'surv_group_by.R' 'surv_fit.R'
         'surv_median.R'
 NeedsCompilation: no
-Packaged: 2017-11-17 11:36:02 UTC; kassambara
+Packaged: 2018-01-31 20:05:37 UTC; kassambara
 Author: Alboukadel Kassambara [aut, cre],
   Marcin Kosinski [aut],
   Przemyslaw Biecek [ctb],
   Scheipl Fabian [ctb]
 Maintainer: Alboukadel Kassambara <alboukadel.kassambara@gmail.com>
 Repository: CRAN
-Date/Publication: 2017-11-17 12:05:59 UTC
+Date/Publication: 2018-01-31 23:03:13 UTC
