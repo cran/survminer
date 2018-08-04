@@ -65,7 +65,7 @@ ggforest <- function(model, data = NULL,
   inds <- apply(allTermsDF[,1:2], 1, paste0, collapse="")
 
   # use broom to get all required statistics
-  coef <- tidy(model)
+  coef <- as.data.frame(tidy(model))
   gmodel <- glance(model)
 
   rownames(coef) <- gsub(coef$term, pattern = "`", replacement = "")
@@ -166,6 +166,7 @@ ggforest <- function(model, data = NULL,
   # switch off clipping for p-vals, bottom annotation:
   gt <- ggplot_gtable(ggplot_build(p))
   gt$layout$clip[gt$layout$name == "panel"] <- "off"
-  grid.draw(gt)
-  invisible(p)
+  # grid.draw(gt)
+  # invisible(p)
+  ggpubr::as_ggplot(gt)
 }
