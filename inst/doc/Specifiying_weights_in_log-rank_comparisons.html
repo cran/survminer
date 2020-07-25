@@ -609,7 +609,7 @@ summary {
 <ul>
 <li><code>n</code> Gehan and Breslow proposed to use <span class="math inline">\(w_{t_i} = n_{t_i}\)</span> (this is also called generalized Wilcoxon),</li>
 <li><code>srqtN</code> Tharone and Ware proposed to use <span class="math inline">\(w_{t_i} = \sqrt{n_{t_i}}\)</span>,</li>
-<li><code>S1</code> Peto-Peto’s modified survival estimate <span class="math inline">\(w_{t_i} = S1({t_i}) = \prod_{i=1}^{T}(\frac{1-e_{t_i}}{n_{t_i}+1})\)</span>,</li>
+<li><code>S1</code> Peto-Peto’s modified survival estimate <span class="math inline">\(w_{t_i} = S1({t_i}) = \prod_{i=1}^{T}(1-\frac{e_{t_i}}{n_{t_i}+1})\)</span>,</li>
 <li><code>S2</code> modified Peto-Peto (by Andersen) <span class="math inline">\(w_{t_i} = S2({t_i}) = \frac{S1({t_i})n_{t_i}}{n_{t_i}+1}\)</span>,</li>
 <li><code>FH</code> Fleming-Harrington <span class="math inline">\(w_{t_i} = S(t_i)^p(1 - S(t_i))^q\)</span>.</li>
 </ul>

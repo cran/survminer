@@ -1,6 +1,6 @@
-677ad4a100585fd305cf6a5091bec4d4 *DESCRIPTION
+73e62965dc0f477a0ee23e02b7bfe1c7 *DESCRIPTION
 e0e299fd26446f0274a10cb21473e0f1 *NAMESPACE
-da54f9c7d4270adf4cad83b9303c7638 *NEWS.md
+6a870223235b881810fb0a75d014364a *NEWS.md
 78c57b6bea5bafc5e5e9426a0586fb56 *R/BMT.R
 0b2af5fb54a68104455f7a8ace240c49 *R/BRCAOV.survInfo.R
 b3934046241450a9c800ff8d7e718d28 *R/add_ggsurvplot.R
@@ -11,7 +11,7 @@ b3934046241450a9c800ff8d7e718d28 *R/add_ggsurvplot.R
 6a4dc0ee917a014a604775673792bb90 *R/ggcoxfunctional.R
 7d2e00f438b3ce72cf72b315708663c2 *R/ggcoxzph.R
 e090a090c01b5999f1e785b273c86d0b *R/ggflexsurvplot.R
-742254b99e2b406162d0b4efa3013566 *R/ggforest.R
+e1bc001fb02b8bd3fe55ffafb03aa800 *R/ggforest.R
 8a16aa920961e5f3e7ea0ea1500552f9 *R/ggsurvevents.R
 77dd04641dda9275abe602d6db19e942 *R/ggsurvplot.R
 66d3ae390c498b5e1e5e0729c1a40d4d *R/ggsurvplot_add_all.R
@@ -45,8 +45,8 @@ f9812571a725116c5f1c583ad4f06c80 *inst/doc/Informative_Survival_Plots.R
 6103b92dc04d32571e450b1453577ca2 *inst/doc/Playing_with_fonts_and_texts.Rmd
 d5116523aff5e431b6ca01e1ba9f3c80 *inst/doc/Playing_with_fonts_and_texts.html
 b3407ccaee894acf8b68c6af5c2be679 *inst/doc/Specifiying_weights_in_log-rank_comparisons.R
-3e1c1d49a33ca9d1ad1c0735c5ed9dbf *inst/doc/Specifiying_weights_in_log-rank_comparisons.Rmd
-96a845b0099a7d6170579f4250b3f0fa *inst/doc/Specifiying_weights_in_log-rank_comparisons.html
+ae6842eb6d681fb8cc3191cdcc97bdb4 *inst/doc/Specifiying_weights_in_log-rank_comparisons.Rmd
+a6d6f52d806b9d496cb29a3d5fb8ef31 *inst/doc/Specifiying_weights_in_log-rank_comparisons.html
 1f298e1c0a00c9190b285072cef479bc *man/BMT.Rd
 efbdd4ad34164a3893dd5b4914329241 *man/BRCAOV.survInfo.Rd
 2a9bd6b5b5f257c5b6c6cb0025215404 *man/add_ggsurvplot.Rd
@@ -86,6 +86,6 @@ b0ed7cc2d5f855f105630e7b235fba23 *tools/README-ggplot2-uber-customized-survival-
 12cf9a134be715272752c9d826377029 *vignettes/Informative_Survival_Plots.Rmd
 6103b92dc04d32571e450b1453577ca2 *vignettes/Playing_with_fonts_and_texts.Rmd
 cf56be5e7886b3fe87a58dbc5b1b03be *vignettes/README.md
-3e1c1d49a33ca9d1ad1c0735c5ed9dbf *vignettes/Specifiying_weights_in_log-rank_comparisons.Rmd
+ae6842eb6d681fb8cc3191cdcc97bdb4 *vignettes/Specifiying_weights_in_log-rank_comparisons.Rmd
 3043d754baccb57496720cfbc3a72ed2 *vignettes/ggsci.css
 00a49c03e915d3031d02c278e22092d7 *vignettes/survminer_orly.png
