@@ -15,8 +15,7 @@ opts_chunk$set(
 
 ## ---- eval = FALSE----------------------------------------------------------------------------------------------------------------------------------
 #  install.packages('survminer')
-#  source("https://bioconductor.org/biocLite.R")
-#  biocLite("RTCGA.clinical") # data for examples
+#  BiocManager::install("RTCGA.clinical") # data for examples
 
 ## ---- fig.width=10, eval = FALSE--------------------------------------------------------------------------------------------------------------------
 #  library(survminer)
