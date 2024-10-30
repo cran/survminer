@@ -1,9 +1,9 @@
 #'Diagnostic Plots for Cox Proportional Hazards Model with ggplot2
 #'@description Displays diagnostics graphs presenting goodness of Cox Proportional Hazards Model fit, that
-#'can be calculated with \link{coxph} function.
-#'@param fit an object of class \link{coxph.object} - created with \link{coxph} function.
+#'can be calculated with \link[survival]{coxph} function.
+#'@param fit an object of class \link[survival]{coxph.object} - created with \link[survival]{coxph} function.
 #'@param type the type of residuals to present on Y axis of a diagnostic plot.
-#'The same as in \link{residuals.coxph}: character string indicating the type of
+#'The same as in \link[survival]{residuals.coxph}: character string indicating the type of
 #'residual desired. Possible values are \code{"martingale", "deviance", "score", "schoenfeld", "dfbeta", "dfbetas"}
 #' and \code{"scaledsch"}. Only enough of the string to
 #' determine a unique match is required.
@@ -16,9 +16,9 @@
 #'@param ... further arguments passed to \code{\link[survival]{residuals.coxph}} or
 #' to the function \code{\link[ggpubr]{ggpar}} for customizing the plot.
 #'@param point.col,point.size,point.shape,point.alpha color, size, shape and visibility to be used for points.
-#'@param hline.col,hline.size,hline.lty,hline.alpha,hline.yintercept color, size, linetype, visibility and Y-axis coordinate to be used for \link{geom_hline}.
+#'@param hline.col,hline.size,hline.lty,hline.alpha,hline.yintercept color, size, linetype, visibility and Y-axis coordinate to be used for \link[ggplot2]{geom_hline}.
 #'Used only when \code{hline = TRUE}.
-#'@param sline.col,sline.size,sline.lty,sline.alpha color, size, linetype and visibility to be used for \link{geom_smooth}.
+#'@param sline.col,sline.size,sline.lty,sline.alpha color, size, linetype and visibility to be used for \link[ggplot2]{geom_smooth}.
 #'Used only when \code{sline = TRUE}.
 #'@param hline a logical - should the horizontal line be added to highlight the \code{Y=0} level.
 #'@param sline,sline.se a logical - should the smooth line be added to highlight the local average for residuals.
@@ -99,19 +99,21 @@ ggcoxdiagnostics <- function (fit,
   else col_names <- names(stats::coef(fit))
   colnames(res) <- col_names
   res$xval <- xval
-  data2plot <- tidyr::gather_(res,
-                              key_col = "covariate", value_col = "res",
-                              gather_col = col_names)
+  data2plot <- tidyr::pivot_longer(
+    data = res, cols = dplyr::all_of(col_names),  
+    names_to = "covariate", values_to = "res",
+    cols_vary = "slowest"
+  )
 
   gplot <- ggplot(aes(xval, res), data = data2plot) +
            geom_point(col = point.col, shape = point.shape,
                        size = point.size, alpha = point.alpha)
 
   if (hline) gplot <- gplot + geom_hline(yintercept=hline.yintercept, col = hline.col,
-                                         size = hline.size, lty = hline.lty, alpha = hline.alpha)
+                                         linewidth = hline.size, lty = hline.lty, alpha = hline.alpha)
 
   if (sline) gplot <- gplot + geom_smooth(col = sline.col, se = sline.se, method = "loess",
-                                         size = sline.size, lty = sline.lty, alpha = sline.alpha)
+                                         linewidth = sline.size, lty = sline.lty, alpha = sline.alpha)
 
   gplot <- gplot + labs(x = xlabel, y = ylabel, title = title, subtitle = subtitle, caption = caption) + ggtheme
   # customization

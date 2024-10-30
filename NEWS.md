@@ -1,3 +1,27 @@
+# Survminer 0.5.0
+
+## Minor changes
+
+- R-ADDICT website is no longer live, so updating links in README (#622)
+- ggplot2 minimum version is now 3.4.0
+- Fixing tidyverse deprecated functions to minimize warnings (@tbaer-c7ks7s #579, and #665):
+  - dplyr::select_() -> dplyr::select()
+  - tidyr::gather_() -> tidyr::pivot_longer()
+  - ggplot2::aes_string() -> ggplot2::aes()
+
+## Bug fixes
+
+- Fixing Rd cross-references issue in the documentation (@HenningLorenzen-ext-bayer, #663). RD `\link{}` targets missing package added in the following Rd files:
+  -  ggadjustedcurves.Rd: coxph.object, coxph
+  -  ggcompetingrisks.Rd: survfit
+  -  ggcoxdiagnostics.Rd: coxph, coxph.object, residuals.coxph, geom_hline, geom_smooth
+  -  ggcoxfunctional.Rd: coxph, Surv, coxph.object, arrangeGrob, grid.arrange
+  -  ggcoxzph.Rd: plot.cox.zph, cox.zph, arrangeGrob, grid.arrange
+  -  ggsurvevents.Rd: Surv, survfit
+  -  ggsurvplot.Rd: grid.arrange
+  -  surv_cutpoint.Rd: theme_classic, grid.arrange
+- Fixing issue in the scaling factor for sd in `ggcoxzph()` (#534 and #535)
+   
 # Survminer 0.4.9
 
 

@@ -181,8 +181,7 @@ print.surv_cutpoint <- function(x, ...){
 
 
 #' @param ggtheme function, ggplot2 theme name. Default value is
-#'   \link{theme_classic}. Allowed values include ggplot2 official themes. see
-#'   ?ggplot2::ggtheme.
+#'   \link[ggplot2]{theme_classic}. Allowed values include ggplot2 official themes. See \code{\link[ggplot2]{theme}()}.
 #' @param bins Number of bins for histogram. Defaults to 30.
 #' @method plot surv_cutpoint
 #' @rdname surv_cutpoint
@@ -215,8 +214,8 @@ plot.surv_cutpoint <- function(x, variables = NULL, ggtheme = theme_classic(), b
                            y1 = 0, y2 = max(p_data$stats))
     cutpoint_label <- paste0("Cutpoint: ", round(max_stat$estimate,2))
     x1 <- y1 <- x2 <- y2 <- NULL
-    max_stat_p <- ggplot(data = p_data, mapping=aes_string("cuts", "stats"))+
-      geom_point(aes_string(color = "grps"), shape = 19, size = 0.5)+
+    max_stat_p <- ggplot(data = p_data, mapping=ggplot2::aes(x = !!sym("cuts"), y = !!sym("stats")))+
+      geom_point(aes(color = !!sym("grps")), shape = 19, size = 0.5)+
       geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2),
                    data = vline_df, linetype = "dashed", size = 0.5)+
       ggplot2::annotate("text", x = max_stat$estimate, y = 0.5,
@@ -240,7 +239,7 @@ plot.surv_cutpoint <- function(x, variables = NULL, ggtheme = theme_classic(), b
   p
 }
 
-#' @param newpage open a new page. See \code{\link{grid.arrange}}.
+#' @param newpage open a new page. See \code{\link[gridExtra]{grid.arrange}}.
 #' @method print plot_surv_cutpoint
 #' @rdname surv_cutpoint
 #' @export

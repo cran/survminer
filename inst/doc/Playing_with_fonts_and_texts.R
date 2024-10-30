@@ -54,10 +54,10 @@ ggsurvplot(fit, data = lung,
    risk.table.caption = "source code: website.com",
    risk.table.height = 0.45)
 
-## ---- fig.height = 7.5, fig.width = 6---------------------------------------------------------------------------------------------------------------
+## ----fig.height = 7.5, fig.width = 6----------------------------------------------------------------------------------------------------------------
 ggsurvplot(fit, data = lung, risk.table = TRUE, ncensor.plot = TRUE)
 
-## ---- fig.height = 7.5, fig.width = 6---------------------------------------------------------------------------------------------------------------
+## ----fig.height = 7.5, fig.width = 6----------------------------------------------------------------------------------------------------------------
 ggsurvplot(fit, data = lung,
    title = "Survival curves", subtitle = "Based on Kaplan-Meier estimates",
    caption = "created with survminer",
