@@ -334,12 +334,30 @@ ggsurvplot_core <- function(fit, data = NULL, fun = NULL,
   for (i in 1:length(plots)) {
     if(is.ggplot(plots[[i]])){
       grobs[[i]] <- ggplotGrob(plots[[i]])
-      widths[[i]] <- grobs[[i]]$widths[2:5]
+      # Find panel columns dynamically instead of hardcoding [2:5]
+      panel_cols <- which(grepl("panel", grobs[[i]]$layout$name))
+      if(length(panel_cols) == 0) {
+        # Fallback to traditional approach if no panel found
+        panel_range <- 2:min(5, ncol(grobs[[i]]))
+      } else {
+        # Use actual panel column range
+        panel_range <- min(panel_cols):max(panel_cols)
+      }
+      widths[[i]] <- grobs[[i]]$widths[panel_range]
     }
   }
   maxwidth <- do.call(grid::unit.pmax, widths)
   for (i in 1:length(grobs)) {
-    grobs[[i]]$widths[2:5] <- as.list(maxwidth)
+    if(!is.null(grobs[[i]])){
+      # Apply same panel range logic for setting widths
+      panel_cols <- which(grepl("panel", grobs[[i]]$layout$name))
+      if(length(panel_cols) == 0) {
+        panel_range <- 2:min(5, ncol(grobs[[i]]))
+      } else {
+        panel_range <- min(panel_cols):max(panel_cols)
+      }
+      grobs[[i]]$widths[panel_range] <- as.list(maxwidth)
+    }
   }
 
 
@@ -412,13 +430,16 @@ ggsurvplot_core <- function(fit, data = NULL, fun = NULL,
     df <- stats::na.omit(df)
 
     if(nrow(df)>0){
-      if(type %in% c("hv", "h"))
+      if(type %in% c("hv", "h")){
+        # Create single-row dataframe for horizontal line to avoid aesthetic length warning
+        h_line_data <- data.frame(x = 0, y = max(df$y2), xend = max(df$x1), yend = max(df$y2))
         p <- p +
-          geom_segment(aes(x = 0, y = max(y2), xend = max(x1), yend = max(y2)),
-                       data = df, linetype = linetype, size = size, color = color) # horizontal segment
+          geom_segment(aes(x = .data$x, y = .data$y, xend = .data$xend, yend = .data$yend),
+                       data = h_line_data, linetype = linetype, size = size, color = color) # horizontal segment
+      }
 
       if(type %in% c("hv", "v"))
-        p <- p + geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2), data = df,
+        p <- p + geom_segment(aes(x = .data$x1, y = .data$y1, xend = .data$x2, yend = .data$y2), data = df,
                               linetype = linetype, size = size, color = color) # vertical segments
     }
     else warning("Median survival not reached.")

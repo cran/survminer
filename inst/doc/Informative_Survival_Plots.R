@@ -14,19 +14,19 @@ opts_chunk$set(
 )
 
 ## ----eval = FALSE-----------------------------------------------------------------------------------------------------------------------------------
-#  install.packages('survminer')
-#  BiocManager::install("RTCGA.clinical") # data for examples
+# install.packages('survminer')
+# BiocManager::install("RTCGA.clinical") # data for examples
 
 ## ----fig.width=10, eval = FALSE---------------------------------------------------------------------------------------------------------------------
-#  library(survminer)
-#  library(RTCGA.clinical)
-#  survivalTCGA(BRCA.clinical, OV.clinical,
-#               extract.cols = "admin.disease_code") -> BRCAOV.survInfo
-#  library(survival)
-#  fit <- survfit(Surv(times, patient.vital_status) ~ admin.disease_code,
-#                 data = BRCAOV.survInfo)
-#  # Visualize with survminer
-#  ggsurvplot(fit, data = BRCAOV.survInfo, risk.table = TRUE)
+# library(survminer)
+# library(RTCGA.clinical)
+# survivalTCGA(BRCA.clinical, OV.clinical,
+#              extract.cols = "admin.disease_code") -> BRCAOV.survInfo
+# library(survival)
+# fit <- survfit(Surv(times, patient.vital_status) ~ admin.disease_code,
+#                data = BRCAOV.survInfo)
+# # Visualize with survminer
+# ggsurvplot(fit, data = BRCAOV.survInfo, risk.table = TRUE)
 
 ## ----echo = FALSE, fig.width=10---------------------------------------------------------------------------------------------------------------------
 library(survminer)
@@ -64,22 +64,22 @@ legend(100, .2, c("Ovarian Cancer", "Breast Cancer"),
        lty = c(1:2), col=c("orange","purple"))
 
 ## ----fig.width=10, eval=FALSE-----------------------------------------------------------------------------------------------------------------------
-#  # install.packages('survMisc')
-#  library(survMisc)
-#  survMisc:::autoplot.survfit(fit) # no customization
-#  
+# # install.packages('survMisc')
+# library(survMisc)
+# survMisc:::autoplot.survfit(fit) # no customization
+# 
 
 ## ----fig.width=10, eval = FALSE---------------------------------------------------------------------------------------------------------------------
-#  survMisc:::autoplot.survfit( # with some hard customization
-#     fit,
-#     type = "fill",
-#     pVal=TRUE
-#  ) -> fit.survMisc
-#  fit.survMisc$table <- fit.survMisc$table +
-#     theme_minimal() + # theme(legend.position = "top")
-#     coord_cartesian(xlim = c(0,2000))
-#  fit.survMisc$plot <- fit.survMisc$plot +
-#     theme_minimal() +
-#     coord_cartesian(xlim = c(0,2000))
-#  survMisc:::print.tableAndPlot(fit.survMisc)
+# survMisc:::autoplot.survfit( # with some hard customization
+#    fit,
+#    type = "fill",
+#    pVal=TRUE
+# ) -> fit.survMisc
+# fit.survMisc$table <- fit.survMisc$table +
+#    theme_minimal() + # theme(legend.position = "top")
+#    coord_cartesian(xlim = c(0,2000))
+# fit.survMisc$plot <- fit.survMisc$plot +
+#    theme_minimal() +
+#    coord_cartesian(xlim = c(0,2000))
+# survMisc:::print.tableAndPlot(fit.survMisc)
 
